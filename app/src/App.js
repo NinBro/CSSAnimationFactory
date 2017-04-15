@@ -1,16 +1,16 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
+import React from 'react';
 import Sidebar from './components/Sidebar';
+import DatePicker from './components/DatePicker';
 import './App.scss';
 
-class App extends Component {
-  render() {
+export default class App extends React.Component {
+
+  render () {
     return (
       <div className="App">
         <Sidebar />
+        <DatePicker />
       </div>
     );
   }
 }
-
-export default App;
