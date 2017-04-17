@@ -1,13 +1,15 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-class Sidebar extends Component {
-  render() {
+export default class Sidebar extends React.Component {
+  render () {
+
+  	// let data = this.props.data;
     return (
-      <div>
-        asdasddsd
+      <div className="sidebar left-panel">
+        <div className="content-container compiled-css">
+          {this.props.data}
+        </div>
       </div>
     );
   }
 }
-
-export default Sidebar;
