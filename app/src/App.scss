@@ -21,28 +21,55 @@ body {
       padding-top: 20px;
       padding-bottom: 20px;
       box-sizing: border-box;
+
       &.left-panel {
-      width: 280px;
-      display: inline-block;
-      z-index: 1;
-      position: relative;
-      height: 85%;
-      max-width: 100%;
-      overflow-y: auto;
-      overflow-x: hidden;
-      background: #fcfcfc;
+        width: 280px;
+        display: inline-block;
+        z-index: 1;
+        position: relative;
+        height: 85%;
+        max-width: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+        background: #fcfcfc;
 
-      .content-container {
-        padding: 0 20px;
+        .content-container {
+          padding: 0 20px;
 
-        &.compiled-css {
-          white-space: pre-wrap;
-          font-family: monospace;
-          font-size: 12px;
-          line-height: 1.25em;
-          letter-spacing: 0.05em;
+          &.compiled-css {
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+            line-height: 1.25em;
+            letter-spacing: 0.05em;
+          }
         }
       }
+
+      &.right-panel {
+        display: none;
+        position: absolute;
+        top: 0;
+        right: -280px;
+        bottom: 0;
+        height: 85%;
+        width: 280px;
+        background: #fcfcfc;
+        z-index: 1;
+        overflow: auto;
+
+        &.active {
+          display: block;
+          right: 0;
+        }
+
+        .tab {
+          display: none;
+
+          &.active {
+            display: block;
+          }
+        }
       }
     }
 

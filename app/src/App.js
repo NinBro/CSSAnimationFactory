@@ -6,7 +6,12 @@ import { Button } from 'antd';
 import './App.scss';
 
 export default class App extends React.Component {
-
+constructor(props) {
+    super(props);
+    this.state = {
+      timelines: ['yooooo', 'broooooo']
+    }
+  }
   getAppData() {
 
     // og
@@ -138,14 +143,30 @@ export default class App extends React.Component {
     return this.getAppData().rawCSS;
   }
 
+  doStuff() {
+    console.log('stuff done!!');
+
+    let newTimelines = this.state.timelines;
+    newTimelines.push('morererererer')
+
+    this.setState({
+      timelines: newTimelines
+    });
+
+    // this.setstate((prevState) => ({
+    //   timelines: prevstate.timelines.push('sadasdsadsadsadads')
+    // }));
+
+    // this.setState((prevState) => ({
+    //   timelines: prevState.timelines.push('sadsadsadasdsadsad')
+    // }));
+
+    // this.state.timelines.push('MORE') ;
+  }
+
   render() {
 
     let _this = this;
-
-    let logit = function () {
-      console.log('click happen');
-      _this.props.stuffToDo = "Stuff to dooooooo!!!!!"
-    }
 
     let stuffToDo = function () {
       // return _this.props.stuffToDo;
@@ -157,11 +178,12 @@ export default class App extends React.Component {
     return (
       <div className="app">
         <div className="navigation">
-          <Button onClick={logit}>Add Timeline</Button>
+          <Button onClick={this.doStuff.bind(this)}>Add Timeline</Button>
         </div>
-        <Sidebar data={this.getRawCSS()} />
+        <Sidebar position="left" data={this.getRawCSS()} />
+        <Sidebar position="right" data="asdasdsaddsad" />
         <div className="timeline-editor-wrapper">
-          <TimelineEditor doStuff={stuffToDo} />
+          <TimelineEditor doStuff={this.state.timelines} />
         </div>
 
       </div>
