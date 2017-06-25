@@ -20,7 +20,7 @@ export default class TimelineEditor extends React.Component {
 
   render () {
 
-    console.log(this.props.doStuff)
+    // console.log(this.props.doStuff)
 
     return (
       <div className="timeline-editor">

@@ -1,4 +1,5 @@
 import React from 'react';
+import {Helmet} from "react-helmet";
 import Sidebar from './components/Sidebar';
 import DatePicker from './components/DatePicker';
 import TimelineEditor from './components/TimelineEditor/TimelineEditor';
@@ -8,10 +9,18 @@ import './App.scss';
 export default class App extends React.Component {
 constructor(props) {
     super(props);
+    this.handleChange = this.handleChange.bind(this);
     this.state = {
-      timelines: ['yooooo', 'broooooo']
+      timelines: ['yooooo', 'broooooo'],
+      // rightSidebarActive: false
+      rightSidebarActive: true, // for testing
+      baseCSS: '',
+      appData: ''
     }
   }
+
+
+  // Starting point for data
   getAppData() {
 
     // og
@@ -134,20 +143,42 @@ constructor(props) {
     return data;
   }
 
+  static defaultProps = {
+      stuffToDo: 'nothing'
+  };
 
-    static defaultProps = {
-        stuffToDo: 'nothing'
-    };
+  componentWillMount() {
+    this.setState({
+      baseCSS: this.getRawCSS(),
+      appData: this.getAppData()
+      // timelines: this.getAppData().timelines
+      // baseCSS: 'asdasdas'
+    })
+  }
 
   getRawCSS() {
     return this.getAppData().rawCSS;
+  }
+
+
+  handleChange(value) {
+    console.log(value);
+    this.setState({
+      baseCSS: value
+      // baseCSS: 'asdasdas'
+    })
+  }
+
+  onClickEditBaseCSS() {
+    console.log('stuff done!!');
+    this.setState({rightSidebarActive: !this.state.rightSidebarActive})
   }
 
   doStuff() {
     console.log('stuff done!!');
 
     let newTimelines = this.state.timelines;
-    newTimelines.push('morererererer')
+    newTimelines.push('morererererer');
 
     this.setState({
       timelines: newTimelines
@@ -175,13 +206,21 @@ constructor(props) {
 
     // let bro = this.getRawCSS();
 
+    let SidebarClasses = 'active';
+
     return (
       <div className="app">
+        <Helmet>
+            <meta charSet="utf-8" />
+            <title>CSS Animation Factory</title>
+            <style type="text/css" id={SidebarClasses}>{this.state.baseCSS}</style>
+        </Helmet>
         <div className="navigation">
           <Button onClick={this.doStuff.bind(this)}>Add Timeline</Button>
+          <Button onClick={this.onClickEditBaseCSS.bind(this)}>Edit Base CSS</Button>
         </div>
-        <Sidebar position="left" data={this.getRawCSS()} />
-        <Sidebar position="right" data="asdasdsaddsad" />
+        <Sidebar position="left" data={this.state.baseCSS} />
+        <Sidebar position="right" onChange={this.handleChange} type="editor" data={this.state.baseCSS} active={this.state.rightSidebarActive} />
         <div className="timeline-editor-wrapper">
           <TimelineEditor doStuff={this.state.timelines} />
         </div>

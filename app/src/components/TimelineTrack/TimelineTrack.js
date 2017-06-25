@@ -18,9 +18,14 @@ export default class TimelineTrack extends React.Component {
     return notches;
   }
 
+  onClick() {
+    console.log('cliiiick');
+  }
+
+
   render () {
     return (
-      <div className="timeline-track" name={this.props.name}>
+      <div className="timeline-track" name={this.props.name} onClick={this.onClick}>
         <div className="timeline-meta">
           <input type="text" className="name" value={this.props.name} />
         </div>
