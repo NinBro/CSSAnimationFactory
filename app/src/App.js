@@ -1,8 +1,28 @@
+//   ___  _   _ ________  ___ ___ _____ _____ _____ _   _
+//  / _ \| \ | |_   _|  \/  |/ _ \_   _|_   _|  _  | \ | |
+// / /_\ \  \| | | | | .  . / /_\ \| |   | | | | | |  \| |
+// |  _  | . ` | | | | |\/| |  _  || |   | | | | | | . ` |
+// | | | | |\  |_| |_| |  | | | | || |  _| |_\ \_/ / |\  |
+// \_| |_|_| \_/\___/\_|  |_|_| |_/\_/  \___/ \___/\_| \_/
+//
+// ______ ___  _____ _____ _____________   __
+// |  ___/ _ \/  __ \_   _|  _  | ___ \ \ / /
+// | |_ / /_\ \ /  \/ | | | | | | |_/ /\ V /
+// |  _||  _  | |     | | | | | |    /  \ /
+// | |  | | | | \__/\ | | \ \_/ / |\ \  | |
+// \_|  \_| |_/\____/ \_/  \___/\_| \_| \_/
+//
+
+// ANIMATION FACTORY
+// -----------------------------------------------------------------------------
+
 import React from 'react';
+import _ from 'lodash';
 import {Helmet} from "react-helmet";
 import Sidebar from './components/Sidebar';
 import DatePicker from './components/DatePicker';
 import TimelineEditor from './components/TimelineEditor/TimelineEditor';
+import TimelinePreview from './components/TimelinePreview';
 import { Button } from 'antd';
 import './App.scss';
 
@@ -10,10 +30,14 @@ export default class App extends React.Component {
 constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
+    this.onclickAddNewTimeline = this.onclickAddNewTimeline.bind(this);
+    this.onClickTimelineTrack = this.onClickTimelineTrack.bind(this);
     this.state = {
+      timelineCount: 0,
       timelines: ['yooooo', 'broooooo'],
-      // rightSidebarActive: false
+      // rightSidebarActive: false,
       rightSidebarActive: true, // for testing
+      rightSidebarData: 'sdaoaskdsaodasokdosadkosadokasdok',
       baseCSS: '',
       appData: ''
     }
@@ -27,10 +51,29 @@ constructor(props) {
     let data = {
       timelines : [
         {
-          id: 1,
           timelineName : 'circleOne',
           classNames : 'logo',
-          descendants : ['circleOne-child', 'circleOne-child-two', 'circleOne-child-three'],
+          descendants : [{
+            timelineName : 'circleOne-child',
+            classNames : 'rings',
+            type : 'normal',
+            animationProperties : {
+              animationDirection : 'normal',
+              duration : '5s',
+              iteration : 'infinite',
+              timingFunction : 'ease'
+            },
+            keyframes : [
+              {
+                position : 0,
+                css : ' transform: rotate(0deg);'
+              },
+              {
+                position : 100,
+                css : ' transform: rotate(360deg);'
+              }
+            ]
+          }],
           type : 'normal',
           animationProperties : {
             animationDirection : 'normal',
@@ -40,30 +83,7 @@ constructor(props) {
           }
         },
         {
-          timelineName : 'circleOne-child',
-          id : 2,
-          classNames : 'rings',
-          type : 'normal',
-          animationProperties : {
-            animationDirection : 'normal',
-            duration : '5s',
-            iteration : 'infinite',
-            timingFunction : 'ease'
-          },
-          keyframes : [
-            {
-              position : 0,
-              css : ' transform: rotate(0deg);'
-            },
-            {
-              position : 100,
-              css : ' transform: rotate(360deg);'
-            }
-          ]
-        },
-        {
           timelineName : 'circleOne-child-two',
-          id : 2,
           classNames : 'rings',
           type : 'normal',
           animationProperties : {
@@ -85,7 +105,6 @@ constructor(props) {
         },
         {
           timelineName : 'circleOne-child-three',
-          id : 2,
           classNames : 'rings',
           type : 'normal',
           animationProperties : {
@@ -148,10 +167,25 @@ constructor(props) {
   };
 
   componentWillMount() {
+
+
+    let i = this.state.timelineCount;
+    let formattedTimelines = [];
+    _.each(this.getAppData().timelines, function(timeline) {
+      console.log(timeline);
+      timeline.id = i;
+      formattedTimelines.push(timeline);
+      i++;
+    });
+
+    console.log(formattedTimelines);
+
+
     this.setState({
       baseCSS: this.getRawCSS(),
-      appData: this.getAppData()
-      // timelines: this.getAppData().timelines
+      appData: this.getAppData(),
+      timelines: formattedTimelines,
+      timelineCount: i
       // baseCSS: 'asdasdas'
     })
   }
@@ -170,20 +204,31 @@ constructor(props) {
   }
 
   onClickEditBaseCSS() {
-    console.log('stuff done!!');
-    this.setState({rightSidebarActive: !this.state.rightSidebarActive})
+    console.log('stuff done!!', this.state.rightSidebarData);
+    // this.setState({rightSidebarActive: !this.state.rightSidebarActive});
+    this.setState({rightSidebarData : this.state.baseCSS});
   }
 
-  doStuff() {
+  onclickAddNewTimeline() {
     console.log('stuff done!!');
 
-    let newTimelines = this.state.timelines;
-    newTimelines.push('morererererer');
+    let i = this.state.timelineCount;
+    i++;
+
+    let currentTimelines = this.state.timelines;
+    let newTimeline = {
+      id: i,
+      timelineName: 'New Timeline'
+    };
+    currentTimelines.push(newTimeline);
 
     this.setState({
-      timelines: newTimelines
+      timelines: currentTimelines,
+      timelineCount : i
     });
 
+
+    console.log(currentTimelines);
     // this.setstate((prevState) => ({
     //   timelines: prevstate.timelines.push('sadasdsadsadsadads')
     // }));
@@ -193,6 +238,25 @@ constructor(props) {
     // }));
 
     // this.state.timelines.push('MORE') ;
+  }
+
+  onClickTimelineTrack(data) {
+    console.log(data);
+    this.setState({rightSidebarData : data.timelineName});
+  }
+
+  renderPreviewContent() {
+    const timelines = this.state.timelines;
+    console.log(timelines);
+    const renderTimelines = timelines.map((timeline) =>
+      <TimelinePreview {...timeline} />
+    );
+
+    return (
+      <div className="preview">
+        {renderTimelines}
+      </div>
+    );
   }
 
   render() {
@@ -209,20 +273,21 @@ constructor(props) {
     let SidebarClasses = 'active';
 
     return (
-      <div className="app">
+      <div id="animationFactory" className="app">
         <Helmet>
             <meta charSet="utf-8" />
             <title>CSS Animation Factory</title>
             <style type="text/css" id={SidebarClasses}>{this.state.baseCSS}</style>
         </Helmet>
         <div className="navigation">
-          <Button onClick={this.doStuff.bind(this)}>Add Timeline</Button>
+          <Button onClick={this.onclickAddNewTimeline.bind(this)}>Add Timeline</Button>
           <Button onClick={this.onClickEditBaseCSS.bind(this)}>Edit Base CSS</Button>
         </div>
+        {this.renderPreviewContent()}
         <Sidebar position="left" data={this.state.baseCSS} />
-        <Sidebar position="right" onChange={this.handleChange} type="editor" data={this.state.baseCSS} active={this.state.rightSidebarActive} />
+        <Sidebar position="right" onChange={this.handleChange} type="editor" data={this.state.rightSidebarData} active={this.state.rightSidebarActive} />
         <div className="timeline-editor-wrapper">
-          <TimelineEditor doStuff={this.state.timelines} />
+          <TimelineEditor onClickTimelineTrack={this.onClickTimelineTrack} timelines={this.state.timelines} />
         </div>
 
       </div>

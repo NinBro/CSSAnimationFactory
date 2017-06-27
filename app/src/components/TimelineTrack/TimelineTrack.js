@@ -1,7 +1,13 @@
 import React from 'react';
 
 export default class TimelineTrack extends React.Component {
-
+  constructor(props) {
+    super(props);
+    // this.state = {
+    //   data: this.props.data || ''
+    // };
+    this.onClick = this.onClick.bind(this);
+  }
 
   Notch(props) {
     return <div is class="notch" position={props.position}></div>
@@ -18,16 +24,18 @@ export default class TimelineTrack extends React.Component {
     return notches;
   }
 
+  // Show config menu....
   onClick() {
-    console.log('cliiiick');
+    // console.log('cliiiick', this.props);
+    this.props.onClick(this.props);
   }
 
 
   render () {
     return (
-      <div className="timeline-track" name={this.props.name} onClick={this.onClick}>
+      <div className="timeline-track" name={this.props.timelineName} onClick={this.onClick}>
         <div className="timeline-meta">
-          <input type="text" className="name" value={this.props.name} />
+          <input type="text" className="name" value={this.props.timelineName} />
         </div>
         <div className="timeline">
           <div className="notches">

@@ -1,5 +1,22 @@
 $font-stack:    Helvetica, sans-serif;
 $primary-color: #000;
+$left-panel-width: 280px;
+
+@mixin flexbox-vertical-align() {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  min-height: 24em;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+};
 
 body {
   font: 100% $font-stack;
@@ -23,7 +40,7 @@ body {
       box-sizing: border-box;
 
       &.left-panel {
-        width: 280px;
+        width: $left-panel-width;
         display: inline-block;
         z-index: 1;
         position: relative;
@@ -50,10 +67,10 @@ body {
         display: none;
         position: absolute;
         top: 0;
-        right: -280px;
+        right: -$left-panel-width;
         bottom: 0;
         height: 85%;
-        width: 280px;
+        width: $left-panel-width;
         background: #fcfcfc;
         z-index: 1;
         overflow: auto;
@@ -72,6 +89,18 @@ body {
         }
       }
     }
+
+  > .preview {
+    background-color: #efefef;
+    position: absolute;
+    top: 0;
+    left: $left-panel-width;
+    right: 0;
+    height: 85%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    @include flexbox-vertical-align();
+  }
 
     .timeline-editor-wrapper {
         z-index: 2;

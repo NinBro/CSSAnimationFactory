@@ -5,7 +5,7 @@ export default class BaseCSSEditor extends React.Component {
   constructor(props) {
     super(props);
     // this.state = {
-    //   data: this.props.data || ''
+    //   value: this.props.data || ''
     // };
     this.handleChange = this.handleChange.bind(this);
   }
@@ -22,9 +22,11 @@ export default class BaseCSSEditor extends React.Component {
 
   render () {
 
+    console.log(this.props.data);
+
     return (
       <div>
-        <textarea className="css-editor" placeholder="Enter your CSS here homie!" onChange={this.handleChange}>{this.props.data}</textarea>
+        <textarea className="css-editor" placeholder="Enter your CSS here homie!" value={this.props.data} onChange={this.handleChange}></textarea>
       </div>
     );
   }

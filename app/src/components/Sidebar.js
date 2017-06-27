@@ -25,6 +25,7 @@ export default class Sidebar extends React.Component {
     let stateClass = this.props.active ? 'active' : '';
 
     let content = null;
+    console.log(this.props.data);
 
     if (this.props.type === 'editor') {
       content = <BaseCSSEditor data={this.props.data} onChange={this.handleChange} />;
