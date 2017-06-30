@@ -1,6 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
-import BaseCSSEditor from './BaseCSSEditor';
+import CSSEditor from './CSSEditor';
+import KeyframeEditor from './KeyframeEditor';
 
 export default class Sidebar extends React.Component {
   constructor(props) {
@@ -28,7 +29,12 @@ export default class Sidebar extends React.Component {
     console.log(this.props.data);
 
     if (this.props.type === 'editor') {
-      content = <BaseCSSEditor data={this.props.data} onChange={this.handleChange} />;
+      content = (
+        <div>
+          <CSSEditor data={this.props.data} onChange={this.handleChange} />
+          <KeyframeEditor keyframes={this.props.data.keyframes} />
+        </div>
+        );
     } else {
       content = this.props.data;
     }

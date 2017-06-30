@@ -1,6 +1,7 @@
 $font-stack:    Helvetica, sans-serif;
 $primary-color: #000;
 $left-panel-width: 280px;
+$navigation-height: 28px;
 
 @mixin flexbox-vertical-align() {
   display: -webkit-box;
@@ -32,6 +33,7 @@ body {
 
     .navigation {
       background-color: #ffffff;
+      height: $navigation-height;
     }
 
     .sidebar {
@@ -92,8 +94,9 @@ body {
 
   > .preview {
     background-color: #efefef;
+    background-color: #DB5956;
     position: absolute;
-    top: 0;
+    top: $navigation-height;
     left: $left-panel-width;
     right: 0;
     height: 85%;
