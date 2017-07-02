@@ -25,7 +25,7 @@ export default class KeyframeEditor extends React.Component {
     let renderKeyframes = '';
     if (this.props.keyframes && this.props.keyframes.length) {
       const keyframes = this.props.keyframes;
-      console.log(keyframes);
+      // console.log(keyframes);
       renderKeyframes = keyframes.map((keyframe) =>
         <div className="keyframe-editor-container" position={keyframe.position}>
           <span className="title">{keyframe.position}% Keyframe</span>
@@ -34,7 +34,7 @@ export default class KeyframeEditor extends React.Component {
         </div>
       );
     }
-    console.log(this.props.keyframes);
+    // console.log(this.props.keyframes);
 
     return (
       <div className={classNames('KeyframeEditor')}>

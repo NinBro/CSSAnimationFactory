@@ -19,7 +19,7 @@
 import React from 'react';
 import _ from 'lodash';
 import {Helmet} from "react-helmet";
-import Sidebar from './components/Sidebar';
+import Sidebar from './components/Sidebar/Sidebar.jsx';
 import DatePicker from './components/DatePicker';
 import TimelineEditor from './components/TimelineEditor/TimelineEditor';
 import TimelinePreview from './components/TimelinePreview';
@@ -355,6 +355,7 @@ constructor(props) {
     let animationCSS = 'animationCSS';
 
     // console.log('timelines', this.state.timelines);
+    console.log('RENDER IT!!!!!')
 
     return (
       <div id="animationFactory" className="app">

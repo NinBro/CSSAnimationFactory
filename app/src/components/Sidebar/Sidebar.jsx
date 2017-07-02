@@ -2,8 +2,10 @@ import React from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import CSSEditor from './CSSEditor';
-import KeyframeEditor from './KeyframeEditor';
+import AnimationProperties from './AnimationProperties';
+import CSSEditor from './../CSSEditor';
+import KeyframeEditor from './../KeyframeEditor';
+import { Button } from 'antd';
 
 export default class Sidebar extends React.Component {
   constructor(props) {
@@ -24,19 +26,19 @@ export default class Sidebar extends React.Component {
 
   // Pass it up to parent....
   handleChange(value) {
+    this.props.onChange(value);
+    // if (this.props.data.timeline) {
+    //   let newData = null;
 
-    if (this.props.data.timeline) {
-    let newData = null;
+    //   // Create a temp instance of props
+    //   newData = _.mapValues(this.props.data.timeline, function(value) {
+    //     return value;
+    //   });
 
-    // Create a temp instance of props
-    newData = _.mapValues(this.props.data.timeline, function(value) {
-      return value;
-    });
-
-    newData.keyframes = value;
-    // newData.keyframes = value;
-    this.props.onChange(newData);
-    }
+    //   newData.keyframes = value;
+    //   // newData.keyframes = value;
+    //   this.props.onChange(newData);
+    // }
   }
 
   render () {
@@ -48,11 +50,14 @@ export default class Sidebar extends React.Component {
     if (data && data.timeline) {
 
       content = (
-        <div>
-          {data.timeline.timelineName}
-          <br/><br/>
-          <KeyframeEditor keyframes={data.timeline.keyframes} onChange={this.handleChange}  />
-        </div>
+        // <div>
+          // {data.timeline.timelineName}
+          // <br/><br/>
+          // <Button>Add Keyframe</Button>
+          <AnimationProperties {...data.timeline} onChange={this.handleChange} />
+          // <br/><br/>
+          // <KeyframeEditor keyframes={data.timeline.keyframes} onChange={this.handleChange}  />
+        // </div>
         );
     } else if (this.props.type === 'editor') {
       content = (

@@ -11,7 +11,7 @@ export default class TimelinePreview extends React.Component {
     let renderDescendants = '';
     if (this.props.descendants && this.props.descendants.length) {
       const descendants = this.props.descendants;
-      console.log(descendants);
+      // console.log(descendants);
       renderDescendants = descendants.map((descendant) =>
         <div name={descendant.timelineName} className={descendant.classNames} />
       );
