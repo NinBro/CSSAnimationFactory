@@ -1,7 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import './TimelineEditor.scss';
-import TimelineTrack from '../TimelineTrack/TimelineTrack';
+import TimelineTrack from './TimelineTrack.jsx';
 
 export default class TimelineEditor extends React.Component {
   constructor(props) {
@@ -35,6 +34,7 @@ export default class TimelineEditor extends React.Component {
       // Flatten....
       if (timeline.descendants && timeline.descendants.length) {
         _.each(timeline.descendants, function(descendant) {
+          descendant.type = 'secondary';
           newTimelines.push(descendant);
         });
       }

@@ -1,11 +1,9 @@
 import React from 'react';
+import classNames from 'classnames';
 
 export default class TimelineTrack extends React.Component {
   constructor(props) {
     super(props);
-    // this.state = {
-    //   data: this.props.data || ''
-    // };
     this.onClick = this.onClick.bind(this);
   }
 
@@ -32,8 +30,13 @@ export default class TimelineTrack extends React.Component {
 
 
   render () {
+    let extraClasses = '';
+    if (this.props.type && this.props.type === 'secondary') {
+      extraClasses = 'secondary';
+    }
+
     return (
-      <div className="timeline-track" name={this.props.timelineName} onClick={this.onClick}>
+      <div className={classNames('timeline-track', extraClasses)} name={this.props.timelineName} onClick={this.onClick}>
         <div className="timeline-meta">
           <input type="text" className="name" value={this.props.timelineName} />
         </div>

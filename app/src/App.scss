@@ -117,25 +117,46 @@ body {
           background: #6F6F6F;
           height: 100%;
 
-          .timeline-meta {
-            position: absolute;
-            float: left;
-            width: 230px;
-            background: grey;
-            color: white;
-            z-index: 1;
-            height: 100%;
-            border-right: 2px solid #525252;
-            font-family: Verdana, Geneva, sans-serif;
-            font-size: 13px;
 
-            > .name {
-                background: none;
-            color: white;
-            border: none;
-            padding: 3px;
+          // secondary...
+
+          .timeline-track {
+
+            &.secondary {
+              .timeline-meta {
+                // background-color: red;
+
+                &:before {
+                  content: '';
+                  display: inline-block;
+                  // background-color: green;
+                  width: 20px;
+                  height: 20px;
+                }
+              }
+            }
+
+            .timeline-meta {
+              position: absolute;
+              float: left;
+              width: 230px;
+              background: grey;
+              color: white;
+              z-index: 1;
+              height: 100%;
+              border-right: 2px solid #525252;
+              font-family: Verdana, Geneva, sans-serif;
+              font-size: 13px;
+
+              > .name {
+                  background: none;
+              color: white;
+              border: none;
+              padding: 3px;
+              }
             }
           }
+
 
           .timeline {
           position: relative;
