@@ -34,22 +34,37 @@ constructor(props) {
     this.onClickTimelineTrack = this.onClickTimelineTrack.bind(this);
     this.state = {
       timelineCount: 0,
-      timelines: ['yooooo', 'broooooo'],
-      // rightSidebarActive: false,
-      rightSidebarActive: true, // for testing
-      rightSidebarData: 'sdaoaskdsaodasokdosadkosadokasdok',
+      // original state
+      timelines: null,
+      // Used for faster data modification
+      timelinesFlattened: null,
+      rightSidebarData: {
+        active: false,
+        type: 'editor',
+        data: null
+      },
       baseCSS: '',
       appData: ''
     }
   }
 
   componentWillMount() {
+
+    // Set ID for each timeline for tracking
     let i = this.state.timelineCount;
     let formattedTimelines = [];
     _.each(this.getAppData().timelines, function(timeline) {
       timeline.id = i;
-      formattedTimelines.push(timeline);
       i++;
+
+      if (timeline.descendants.length) {
+        _.each(timeline.descendants, function(descendant) {
+          descendant.id = i;
+          i++;
+        });
+      }
+      formattedTimelines.push(timeline);
+
     });
 
     this.setState({
@@ -157,14 +172,49 @@ constructor(props) {
 
 
   handleChange(value) {
-    console.log(value);
-    this.setState({
-      baseCSS: value
-    })
+
+
+
+
+
+    if (value.timelineName) {
+
+
+
+      let timelines = this.state.timelines;
+
+
+      let descendantId = null;
+      let match = _.find(timelines, function(timeline) {
+        if (timeline.descendants.length) {
+          descendantId = _.find(timeline.descendants, function(descendant) {
+            return descendant.id === value.id;
+          });
+        }
+
+        return (descendantId && descendantId.id) || (timeline.id === value.id);
+      });
+
+
+      if (descendantId) {
+        let descendantToUpdate = _.findIndex(this.state.timelines[0].descendants, function(descendant) { return descendant.id === descendantId.id; });
+        timelines[0].descendants[descendantToUpdate] = value;
+        this.setState({
+          timelines: timelines
+        });
+      }
+
+    } else {
+      this.setState({
+        baseCSS: value
+      });
+    }
   }
 
   onClickEditBaseCSS() {
-    this.setState({rightSidebarData : this.state.baseCSS});
+    this.setState({rightSidebarData: {
+      data : this.state.baseCSS
+    }});
   }
 
   onclickAddNewTimeline() {
@@ -198,8 +248,17 @@ constructor(props) {
     // this.state.timelines.push('MORE') ;
   }
 
-  onClickTimelineTrack(data) {
-    this.setState({rightSidebarData : data});
+  // Show sidebar when timeline clicked
+  // @param timeline {}
+  onClickTimelineTrack(timeline) {
+    this.setState({
+      rightSidebarData: {
+        active: true,
+        data: {
+          timeline: timeline
+        }
+      }
+    });
   }
 
   renderPreviewContent() {
@@ -216,7 +275,7 @@ constructor(props) {
   }
 
   renderAnimationCSS() {
-    const timelines = this.state.appData.timelines;
+    const timelines = this.state.timelines;
     const _this = this;
     let css = '';
 
@@ -295,13 +354,15 @@ constructor(props) {
     let baseCSS = 'baseCSS';
     let animationCSS = 'animationCSS';
 
+    // console.log('timelines', this.state.timelines);
+
     return (
       <div id="animationFactory" className="app">
         <Helmet>
-            <meta charSet="utf-8" />
-            <title>CSS Animation Factory</title>
-            <style type="text/css" id={baseCSS}>{this.state.baseCSS}</style>
-            <style type="text/css" id={animationCSS}>{this.renderAnimationCSS()}</style>
+          <meta charSet="utf-8" />
+          <title>CSS Animation Factory</title>
+          <style type="text/css" id={baseCSS}>{this.state.baseCSS}</style>
+          <style type="text/css" id={animationCSS}>{this.renderAnimationCSS()}</style>
         </Helmet>
         <div className="navigation">
           <Button onClick={this.onclickAddNewTimeline.bind(this)}>Add Timeline</Button>
@@ -309,11 +370,14 @@ constructor(props) {
         </div>
         {this.renderPreviewContent()}
         <Sidebar position="left" data={this.state.baseCSS} />
-        <Sidebar position="right" onChange={this.handleChange} type="editor" data={this.state.rightSidebarData} active={this.state.rightSidebarActive} />
+        <Sidebar position="right"
+                 onChange={this.handleChange}
+                 type={this.state.rightSidebarData.type}
+                 data={this.state.rightSidebarData.data}
+                 active={this.state.rightSidebarData.active} />
         <div className="timeline-editor-wrapper">
           <TimelineEditor onClickTimelineTrack={this.onClickTimelineTrack} timelines={this.state.timelines} />
         </div>
-
       </div>
     );
   }

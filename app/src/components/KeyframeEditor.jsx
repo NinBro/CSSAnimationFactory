@@ -1,10 +1,22 @@
 import React from 'react';
+import _ from 'lodash';
 import classNames from 'classnames';
 import CSSEditor from './CSSEditor';
 
 export default class KeyframeEditor extends React.Component {
   constructor(props) {
     super(props);
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  // Pass it up to parent....
+  handleChange(value, childProps) {
+    let keyframes = this.props.keyframes;
+    let keyframeIDToUpdate = _.findIndex(this.props.keyframes, function(keyframe) { return keyframe.position === childProps.id; });
+    if (_.isNumber(keyframeIDToUpdate)) {
+      keyframes[keyframeIDToUpdate].css = value;
+      this.props.onChange(keyframes);
+    }
   }
 
   render () {
@@ -18,7 +30,7 @@ export default class KeyframeEditor extends React.Component {
         <div className="keyframe-editor-container" position={keyframe.position}>
           <span className="title">{keyframe.position}% Keyframe</span>
           {/*<span className="title delete">x</span>*/}
-          <CSSEditor data={keyframe.css} />
+          <CSSEditor id={keyframe.position} css={keyframe.css} onChange={this.handleChange} />
         </div>
       );
     }

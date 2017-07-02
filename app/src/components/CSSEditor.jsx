@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 export default class CSSEditor extends React.Component {
   constructor(props) {
@@ -7,18 +8,27 @@ export default class CSSEditor extends React.Component {
   }
 
   handleChange(event) {
-    console.log(event.target.value);
-    this.props.onChange(event.target.value);
+    if (this.props.onChange) {
+      this.props.onChange(event.target.value, this.props);
+    }
   }
 
   render () {
-
-    console.log(this.props.data);
-
     return (
       <div>
-        <textarea className="css-editor" placeholder="Enter your CSS here homie!" value={this.props.data} onChange={this.handleChange}></textarea>
+        <textarea className="css-editor" placeholder="Enter your CSS here homie!" value={this.props.css} onChange={this.handleChange}></textarea>
       </div>
     );
   }
 }
+
+CSSEditor.propTypes = {
+  // ID for editor
+  id: PropTypes.number,
+
+  // Editable CSS text
+  css: PropTypes.string,
+
+  // Callback onChange results to parent
+  onChange: PropTypes.func
+};

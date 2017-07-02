@@ -1,4 +1,6 @@
 import React from 'react';
+import _ from 'lodash';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import CSSEditor from './CSSEditor';
 import KeyframeEditor from './KeyframeEditor';
@@ -6,37 +8,58 @@ import KeyframeEditor from './KeyframeEditor';
 export default class Sidebar extends React.Component {
   constructor(props) {
     super(props);
-    // this.state = {
-    //   data: this.props.data || ''
-    // };
+    this.state = {
+      timeline: null
+    }
     this.handleChange = this.handleChange.bind(this);
   }
 
+  componentWillMount() {
+    if (this.props.timeline) {
+      this.setState({
+        timeline: this.props.timeline
+      });
+    }
+  }
+
+  // Pass it up to parent....
   handleChange(value) {
-    // console.log('changed!!!!!');
-    // return 'asdasdadsadasdasd';
-    // console.log(value);
-    console.log(value);
-    // this.setState({data: value});
-    this.props.onChange(value);
+
+    if (this.props.data.timeline) {
+    let newData = null;
+
+    // Create a temp instance of props
+    newData = _.mapValues(this.props.data.timeline, function(value) {
+      return value;
+    });
+
+    newData.keyframes = value;
+    // newData.keyframes = value;
+    this.props.onChange(newData);
+    }
   }
 
   render () {
+    let data = this.props.data;
     let positionClass = this.props.position ? this.props.position + '-panel' : '';
     let stateClass = this.props.active ? 'active' : '';
 
     let content = null;
-    console.log(this.props.data);
+    if (data && data.timeline) {
 
-    if (this.props.type === 'editor') {
+      content = (
+        <div>
+          {data.timeline.timelineName}
+          <br/><br/>
+          <KeyframeEditor keyframes={data.timeline.keyframes} onChange={this.handleChange}  />
+        </div>
+        );
+    } else if (this.props.type === 'editor') {
       content = (
         <div>
           <CSSEditor data={this.props.data} onChange={this.handleChange} />
-          <KeyframeEditor keyframes={this.props.data.keyframes} />
         </div>
         );
-    } else {
-      content = this.props.data;
     }
 
   	// let data = this.props.data;
@@ -49,3 +72,14 @@ export default class Sidebar extends React.Component {
     );
   }
 }
+
+CSSEditor.propTypes = {
+  // If sidebar is active or not
+  active: PropTypes.string,
+
+  // Any kind of data to pass through
+  data: PropTypes.object,
+
+  // Callback onChange results to parent
+  onChange: PropTypes.func
+};
