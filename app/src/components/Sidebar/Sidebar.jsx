@@ -27,18 +27,6 @@ export default class Sidebar extends React.Component {
   // Pass it up to parent....
   handleChange(value) {
     this.props.onChange(value);
-    // if (this.props.data.timeline) {
-    //   let newData = null;
-
-    //   // Create a temp instance of props
-    //   newData = _.mapValues(this.props.data.timeline, function(value) {
-    //     return value;
-    //   });
-
-    //   newData.keyframes = value;
-    //   // newData.keyframes = value;
-    //   this.props.onChange(newData);
-    // }
   }
 
   render () {
@@ -48,17 +36,9 @@ export default class Sidebar extends React.Component {
 
     let content = null;
     if (data && data.timeline) {
-
       content = (
-        // <div>
-          // {data.timeline.timelineName}
-          // <br/><br/>
-          // <Button>Add Keyframe</Button>
-          <AnimationProperties {...data.timeline} onChange={this.handleChange} />
-          // <br/><br/>
-          // <KeyframeEditor keyframes={data.timeline.keyframes} onChange={this.handleChange}  />
-        // </div>
-        );
+        <AnimationProperties {...data.timeline} onChange={this.handleChange} />
+      );
     } else if (this.props.type === 'editor') {
       content = (
         <div>
@@ -67,7 +47,6 @@ export default class Sidebar extends React.Component {
         );
     }
 
-  	// let data = this.props.data;
     return (
       <div className={classNames('sidebar', positionClass, stateClass)}>
         <div className="content-container compiled-css">

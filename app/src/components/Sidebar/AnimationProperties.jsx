@@ -56,10 +56,17 @@ export default class AnimationProperties extends React.Component {
       position: 50
     });
 
+    let sortedKeyframes = _.sortBy(newData.keyframes, [function(keyframe) { return keyframe.position; }]);
+
+    newData.keyframes = sortedKeyframes;
     // console.log(newData);
 
     // newData.keyframes = value;
     this.props.onChange(newData);
+  }
+
+  onClickDeleteKeyframe() {
+
   }
 
   render () {
@@ -79,5 +86,5 @@ export default class AnimationProperties extends React.Component {
 
 AnimationProperties.propTypes = {
   // These represent the props from the timeline provided
-  props: PropTypes.object,
+  props: PropTypes.object
 };

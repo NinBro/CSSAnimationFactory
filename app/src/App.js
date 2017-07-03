@@ -173,17 +173,8 @@ constructor(props) {
 
   handleChange(value) {
 
-
-
-
-
     if (value.timelineName) {
-
-
-
       let timelines = this.state.timelines;
-
-
       let descendantId = null;
       let match = _.find(timelines, function(timeline) {
         if (timeline.descendants.length) {
@@ -195,12 +186,16 @@ constructor(props) {
         return (descendantId && descendantId.id) || (timeline.id === value.id);
       });
 
-
       if (descendantId) {
         let descendantToUpdate = _.findIndex(this.state.timelines[0].descendants, function(descendant) { return descendant.id === descendantId.id; });
         timelines[0].descendants[descendantToUpdate] = value;
+
+        // var newSelected = _.extend({}, this.state.rightSidebarData);
+        // newSelected.data = value;
         this.setState({
           timelines: timelines
+          // rightSidebarData: newSelected
+
         });
       }
 

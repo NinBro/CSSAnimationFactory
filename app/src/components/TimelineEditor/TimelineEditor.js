@@ -6,18 +6,6 @@ export default class TimelineEditor extends React.Component {
   constructor(props) {
     super(props);
     this.onClick = this.onClick.bind(this);
-    this.state = {
-      timelineCount: 0,
-      timelines: this.props.timelines
-    }
-  }
-
-  componentWillMount() {
-    let flatTimelines = this.getTimelinesFlattened();
-
-    this.setState({
-      timelines: flatTimelines
-    })
   }
 
   onClick(data) {
@@ -25,7 +13,7 @@ export default class TimelineEditor extends React.Component {
   }
 
   getTimelinesFlattened() {
-    const timelines = this.state.timelines;
+    const timelines = this.props.timelines;
     let newTimelines = [];
 
     _.each(timelines, function(timeline) {
@@ -44,7 +32,7 @@ export default class TimelineEditor extends React.Component {
   }
 
   render () {
-    const timelines = this.state.timelines;
+    const timelines = this.getTimelinesFlattened();
     const timelinesHTML = timelines.map((timeline) =>
       <TimelineTrack {...timeline} onClick={this.onClick} />
     );
