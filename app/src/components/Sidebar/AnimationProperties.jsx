@@ -52,7 +52,7 @@ export default class AnimationProperties extends React.Component {
     });
 
     newData.keyframes.push({
-      css: 'background: blue',
+      css: '', // EMPTY
       position: 50
     });
 

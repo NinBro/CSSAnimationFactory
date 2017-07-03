@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Input } from 'antd';
 
 export default class CSSEditor extends React.Component {
   constructor(props) {
@@ -16,7 +17,7 @@ export default class CSSEditor extends React.Component {
   render () {
     return (
       <div>
-        <textarea className="css-editor" placeholder="Enter your CSS here homie!" value={this.props.css} onChange={this.handleChange}></textarea>
+        <Input type="textarea" className="css-editor" placeholder="Enter your CSS here homie!" value={this.props.css} onChange={this.handleChange}/>
       </div>
     );
   }

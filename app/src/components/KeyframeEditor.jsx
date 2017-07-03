@@ -85,9 +85,12 @@ export default class KeyframeEditor extends React.Component {
       // console.log(keyframes);
       renderKeyframes = keyframes.map((keyframe) =>
         <div className="keyframe-editor-container" position={keyframe.position}>
+        <div className="keyframe-header">
           <Input id={keyframe.position} position={keyframe.position} value={keyframe.position} onChange={this.onChangePosition} />
-          <span className="title">{keyframe.position}% Keyframe</span>
+          <span className="title">% Keyframe</span>
           <span id={keyframe.position} position={keyframe.position} className="title delete" onClick={this.onClickDeleteKeyframe}>x</span>
+        </div>
+
           <CSSEditor id={keyframe.position} css={keyframe.css} onChange={this.handleChange} />
         </div>
       );

@@ -90,6 +90,36 @@ body {
           }
         }
       }
+
+      .content-container {
+        $spacing: 20px;
+        padding: $spacing;
+
+        .keyframe-editor-container {
+
+          + .keyframe-editor-container {
+            margin-top: $spacing;
+
+          }
+          input[type=text] {
+            text-align: right;
+            width: 40px;
+            background-color: #fcfcfc;
+            border-color: #fcfcfc;
+
+            &:hover {
+              background-color: #ffffff;
+              border-color: #d9d9d9;
+            }
+          }
+
+          .title.delete {
+            float: right;
+          }
+        }
+      }
+
+
     }
 
   > .preview {
