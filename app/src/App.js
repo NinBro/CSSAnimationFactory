@@ -269,8 +269,7 @@ constructor(props) {
     );
   }
 
-  renderAnimationCSS() {
-    const timelines = this.state.timelines;
+  renderAnimationCSS(timelines) {
     const _this = this;
     let css = '';
 
@@ -348,8 +347,9 @@ constructor(props) {
     let SidebarClasses = 'active';
     let baseCSS = 'baseCSS';
     let animationCSS = 'animationCSS';
+    const timelines = this.state.timelines;
 
-    // console.log('timelines', this.state.timelines);
+    console.log('timelines', timelines);
     console.log('RENDER IT!!!!!')
 
     return (
@@ -358,7 +358,7 @@ constructor(props) {
           <meta charSet="utf-8" />
           <title>CSS Animation Factory</title>
           <style type="text/css" id={baseCSS}>{this.state.baseCSS}</style>
-          <style type="text/css" id={animationCSS}>{this.renderAnimationCSS()}</style>
+          <style type="text/css" id={animationCSS}>{this.renderAnimationCSS(timelines)}</style>
         </Helmet>
         <div className="navigation">
           <Button onClick={this.onclickAddNewTimeline.bind(this)}>Add Timeline</Button>
@@ -372,7 +372,7 @@ constructor(props) {
                  data={this.state.rightSidebarData.data}
                  active={this.state.rightSidebarData.active} />
         <div className="timeline-editor-wrapper">
-          <TimelineEditor onClickTimelineTrack={this.onClickTimelineTrack} timelines={this.state.timelines} />
+          <TimelineEditor onClickTimelineTrack={this.onClickTimelineTrack} timelines={timelines} />
         </div>
       </div>
     );

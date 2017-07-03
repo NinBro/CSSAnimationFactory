@@ -41,6 +41,9 @@ export default class AnimationProperties extends React.Component {
     this.props.onChange(newData);
   }
 
+  // TODO
+  // 1) Do not allow duplicates
+  // 2) Add keyframe to nearest after first one
   onClickAddKeyframe() {
     console.log('hiiiii');
 
