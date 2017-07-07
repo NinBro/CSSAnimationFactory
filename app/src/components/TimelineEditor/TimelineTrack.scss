@@ -1,0 +1,17 @@
+.TimelineTrack {
+  // background-color: red;
+  > .timeline {
+    overflow: hidden;
+
+    &:hover {
+      background-color: #898585;
+    }
+    > .animation-key {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      // transform: translate(0%, 0);
+      border-left: 1px solid red;
+    }
+  }
+}

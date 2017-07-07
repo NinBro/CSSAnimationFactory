@@ -1,24 +1,4 @@
-$font-stack:    Helvetica, sans-serif;
-$primary-color: #000;
-$left-panel-width: 280px;
-$navigation-height: 28px;
-
-@mixin flexbox-vertical-align() {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-  -webkit-align-items: center;
-  -ms-flex-align: center;
-  align-items: center;
-  min-height: 24em;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-};
-
+@import 'variables.scss';
 body {
   font: 100% $font-stack;
   color: $primary-color;
@@ -122,18 +102,18 @@ body {
 
     }
 
-  > .preview {
-    background-color: #efefef;
-    background-color: #DB5956;
-    position: absolute;
-    top: $navigation-height;
-    left: $left-panel-width;
-    right: 0;
-    height: 85%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    @include flexbox-vertical-align();
-  }
+  // > .preview {
+  //   background-color: #efefef;
+  //   background-color: #DB5956;
+  //   position: absolute;
+  //   top: $navigation-height;
+  //   left: $left-panel-width;
+  //   right: 0;
+  //   height: 85%;
+  //   overflow-y: auto;
+  //   overflow-x: hidden;
+  //   @include flexbox-vertical-align();
+  // }
 
     .timeline-editor-wrapper {
         z-index: 2;
@@ -142,6 +122,9 @@ body {
         left: 0;
         right: 0;
         height: 15%;
+        overflow: auto;
+        background-color: #6F6F6F;
+
 
         .timeline-editor {
           background: #6F6F6F;

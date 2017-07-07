@@ -1,0 +1,18 @@
+@import '../variables.scss';
+
+.Preview {
+  background-color: #efefef;
+  background-color: #DB5956;
+  position: absolute;
+  top: $navigation-height;
+  left: $left-panel-width;
+  right: 0;
+  height: 85%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  @include flexbox-vertical-align();
+
+  .active {
+    opacity: 0.5;
+  }
+}

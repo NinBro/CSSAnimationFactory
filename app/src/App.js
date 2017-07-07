@@ -22,7 +22,7 @@ import {Helmet} from "react-helmet";
 import Sidebar from './components/Sidebar/Sidebar.jsx';
 import DatePicker from './components/DatePicker';
 import TimelineEditor from './components/TimelineEditor/TimelineEditor';
-import TimelinePreview from './components/TimelinePreview';
+import Preview from './components/Preview/Preview.jsx';
 import { Button } from 'antd';
 import './App.scss';
 
@@ -32,6 +32,7 @@ constructor(props) {
     this.handleChange = this.handleChange.bind(this);
     this.onclickAddNewTimeline = this.onclickAddNewTimeline.bind(this);
     this.onClickTimelineTrack = this.onClickTimelineTrack.bind(this);
+    this.appEvent = this.appEvent.bind(this);
     this.state = {
       timelineCount: 0,
       // original state
@@ -72,7 +73,7 @@ constructor(props) {
       appData: this.getAppData(),
       timelines: formattedTimelines,
       timelineCount: i
-    })
+    });
   }
 
   // Starting point for data
@@ -172,38 +173,53 @@ constructor(props) {
 
 
   handleChange(value) {
-
+    // If updating a timeline
     if (value.timelineName) {
-      let timelines = this.state.timelines;
-      let descendantId = null;
-      let match = _.find(timelines, function(timeline) {
-        if (timeline.descendants.length) {
-          descendantId = _.find(timeline.descendants, function(descendant) {
-            return descendant.id === value.id;
-          });
-        }
-
-        return (descendantId && descendantId.id) || (timeline.id === value.id);
-      });
-
-      if (descendantId) {
-        let descendantToUpdate = _.findIndex(this.state.timelines[0].descendants, function(descendant) { return descendant.id === descendantId.id; });
-        timelines[0].descendants[descendantToUpdate] = value;
-
-        // var newSelected = _.extend({}, this.state.rightSidebarData);
-        // newSelected.data = value;
-        this.setState({
-          timelines: timelines
-          // rightSidebarData: newSelected
-
-        });
-      }
-
+      this.updateTimeline(value);
     } else {
       this.setState({
         baseCSS: value
       });
     }
+  }
+
+  updateTimeline(timelineToUpdate) {
+    if (timelineToUpdate.timelineName) {
+      let timelines = this.state.timelines;
+      let descendantId = null;
+      let match = _.find(timelines, function(timeline) {
+        if (timeline.descendants.length) {
+          descendantId = _.find(timeline.descendants, function(descendant) {
+            return descendant.id === timelineToUpdate.id;
+          });
+        }
+
+        return (descendantId && descendantId.id) || (timeline.id === timelineToUpdate.id);
+      });
+
+      if (descendantId) {
+        let descendantToUpdate = _.findIndex(this.state.timelines[0].descendants, function(descendant) { return descendant.id === descendantId.id; });
+        timelines[0].descendants[descendantToUpdate] = timelineToUpdate;
+
+        // var newSelected = _.extend({}, this.state.rightSidebarData);
+        // newSelected.data = timelineToUpdate;
+        this.setState({
+          timelines: timelines
+        });
+      } else if (match) {
+        let timelineIdToUpdate = _.findIndex(this.state.timelines, function(timeline) { return timeline.id === match.id; });
+        timelines[timelineIdToUpdate] = timelineToUpdate;
+        this.setState({
+          timelines: timelines
+        });
+      }
+
+    }
+  }
+
+  appEvent(eventName, callback) {
+    console.log(eventName, callback);
+    this.updateTimeline(callback);
   }
 
   onClickEditBaseCSS() {
@@ -259,16 +275,17 @@ constructor(props) {
   renderPreviewContent() {
     const timelines = this.state.timelines;
     const renderTimelines = timelines.map((timeline) =>
-      <TimelinePreview {...timeline} />
+      <Preview {...timeline} />
     );
 
     return (
-      <div className="preview">
+      <div className="Preview preview">
         {renderTimelines}
       </div>
     );
   }
 
+  // Returns compiled CSS from {timelines} provided
   renderAnimationCSS(timelines) {
     const _this = this;
     let css = '';
@@ -287,16 +304,52 @@ constructor(props) {
     return css;
   }
 
+
+
   renderTimelineCSS(timeline) {
     const _this = this;
     let css = '';
     if (timeline.animationProperties) {
       css += _this.getAnimationProperties(timeline);
+      css += _this.renderAnimatedKeyframesCSS(timeline);
     }
 
     if (timeline.keyframes && timeline.keyframes.length) {
       css += _this.getCSSKeyframes(timeline);
+      css += _this.getCSSKeyframeCursor(timeline);
     }
+
+    return css;
+  }
+
+  renderAnimatedKeyframesCSS(timeline) {
+    // const keyframes = keyframes;
+    let css = '';
+    let animationProperties = timeline.animationProperties;
+
+    if (animationProperties) {
+      css +=  `
+.TimelineTrack[name="${timeline.timelineName}"] .animation-key {
+  animation: ${timeline.timelineName}-cursor ${animationProperties.duration} infinite linear;
+}`;
+    }
+
+    return css;
+  }
+
+  getCSSKeyframeCursor(timeline) {
+    // const keyframes = keyframes;
+    let css = '';
+
+      css = `@keyframes ${timeline.timelineName}-cursor {
+        0% {
+          transform: translate(0%, 0);
+        }
+
+        100% {
+          transform: translate(100%, 0);
+        }
+      }`;
 
     return css;
   }
@@ -307,9 +360,10 @@ constructor(props) {
     let animationProperties = timeline.animationProperties;
 
     if (animationProperties) {
-      css += `.preview [name="${timeline.timelineName}"] {
-        -webkit-animation: ${timeline.timelineName} ${animationProperties.duration} ${animationProperties.iteration} ${animationProperties.timingFunction} ${animationProperties.animationDirection};
-      }`;
+      css += `
+.preview [name="${timeline.timelineName}"] {
+  animation: ${timeline.timelineName} ${animationProperties.duration} ${animationProperties.iteration} ${animationProperties.timingFunction} ${animationProperties.animationDirection};
+}`;
     }
 
     return css;
@@ -372,7 +426,7 @@ constructor(props) {
                  data={this.state.rightSidebarData.data}
                  active={this.state.rightSidebarData.active} />
         <div className="timeline-editor-wrapper">
-          <TimelineEditor onClickTimelineTrack={this.onClickTimelineTrack} timelines={timelines} />
+          <TimelineEditor appEvent={this.appEvent} onClickTimelineTrack={this.onClickTimelineTrack} timelines={timelines} />
         </div>
       </div>
     );

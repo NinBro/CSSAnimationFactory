@@ -6,6 +6,26 @@ export default class TimelineEditor extends React.Component {
   constructor(props) {
     super(props);
     this.onClick = this.onClick.bind(this);
+    this.onMouseEnter = this.onMouseEnter.bind(this);
+    this.onMouseLeave = this.onMouseLeave.bind(this);
+  }
+
+  onMouseEnter(props) {
+    // Create a temp instance of props
+    let newProps = _.mapValues(props, function(value) {
+      return value;
+    });
+    newProps.active = true;
+
+    this.props.appEvent('onMouseEnter', newProps);
+  }
+
+  onMouseLeave(props) {
+    let newProps = _.mapValues(props, function(value) {
+      return value;
+    });
+    newProps.active = false;
+    this.props.appEvent('onMouseLeave', newProps);
   }
 
   onClick(data) {
@@ -34,7 +54,7 @@ export default class TimelineEditor extends React.Component {
   render () {
     const timelines = this.getTimelinesFlattened();
     const timelinesHTML = timelines.map((timeline) =>
-      <TimelineTrack {...timeline} onClick={this.onClick} />
+      <TimelineTrack onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave} {...timeline} onClick={this.onClick} />
     );
 
     return (
