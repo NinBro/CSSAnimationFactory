@@ -19,7 +19,7 @@ export default class KeyframeEditor extends React.Component {
     if (_.isNumber(keyframeIDToUpdate)) {
 
       // Update CSS
-      if (childProps.css) {
+      if (!_.isUndefined(childProps.css)) {
         keyframes[keyframeIDToUpdate].css = value;
         this.props.onChange(keyframes);
 

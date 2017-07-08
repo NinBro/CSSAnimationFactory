@@ -32,6 +32,9 @@ constructor(props) {
     this.handleChange = this.handleChange.bind(this);
     this.onclickAddNewTimeline = this.onclickAddNewTimeline.bind(this);
     this.onClickTimelineTrack = this.onClickTimelineTrack.bind(this);
+    this.onClickPreview = this.onClickPreview.bind(this);
+
+
     this.appEvent = this.appEvent.bind(this);
     this.state = {
       timelineCount: 0,
@@ -183,7 +186,7 @@ constructor(props) {
     }
   }
 
-  updateTimeline(timelineToUpdate) {
+  updateTimeline(timelineToUpdate, eventName) {
     if (timelineToUpdate.timelineName) {
       let timelines = this.state.timelines;
       let descendantId = null;
@@ -209,17 +212,35 @@ constructor(props) {
       } else if (match) {
         let timelineIdToUpdate = _.findIndex(this.state.timelines, function(timeline) { return timeline.id === match.id; });
         timelines[timelineIdToUpdate] = timelineToUpdate;
-        this.setState({
+
+        let dataToSave = {
           timelines: timelines
-        });
+        };
+
+
+        if (eventName && (eventName === 'onMouseEnter' || eventName === 'onMouseLeave')) {
+          // do nothing extra for hover state
+        }
+
+        // When self updating.....
+        else if (this.state.rightSidebarData.active) {
+          dataToSave.rightSidebarData = {
+            active: true,
+            data: {
+              timeline: timelineToUpdate
+            }
+          }
+        }
+
+        this.setState(dataToSave);
       }
 
     }
   }
 
   appEvent(eventName, callback) {
-    console.log(eventName, callback);
-    this.updateTimeline(callback);
+    // console.log(eventName, callback);
+    this.updateTimeline(callback, eventName);
   }
 
   onClickEditBaseCSS() {
@@ -259,6 +280,15 @@ constructor(props) {
     // this.state.timelines.push('MORE') ;
   }
 
+  // Hide sidebar when preview is clicked
+  onClickPreview() {
+    this.setState({
+      rightSidebarData: {
+        active: false
+      }
+    });
+  }
+
   // Show sidebar when timeline clicked
   // @param timeline {}
   onClickTimelineTrack(timeline) {
@@ -272,6 +302,7 @@ constructor(props) {
     });
   }
 
+  // Renders Preview Pane
   renderPreviewContent() {
     const timelines = this.state.timelines;
     const renderTimelines = timelines.map((timeline) =>
@@ -279,7 +310,7 @@ constructor(props) {
     );
 
     return (
-      <div className="Preview preview">
+      <div className="Preview preview" onClick={this.onClickPreview}>
         {renderTimelines}
       </div>
     );
@@ -404,7 +435,16 @@ constructor(props) {
     const timelines = this.state.timelines;
 
     console.log('timelines', timelines);
-    console.log('RENDER IT!!!!!')
+    console.log('RENDER IT!!!!!');
+
+    let leftSidebarData = '';
+    // If timeline active show its css
+    if (this.state.rightSidebarData.data && this.state.rightSidebarData.data.timeline) {
+      leftSidebarData = this.renderAnimationCSS([this.state.rightSidebarData.data.timeline]);
+    // Otherwise show global css
+    } else {
+      leftSidebarData = this.renderAnimationCSS(timelines);
+    }
 
     return (
       <div id="animationFactory" className="app">
@@ -419,7 +459,7 @@ constructor(props) {
           <Button onClick={this.onClickEditBaseCSS.bind(this)}>Edit Base CSS</Button>
         </div>
         {this.renderPreviewContent()}
-        <Sidebar position="left" data={this.state.baseCSS} />
+        <Sidebar position="left" data={leftSidebarData} />
         <Sidebar position="right"
                  onChange={this.handleChange}
                  type={this.state.rightSidebarData.type}

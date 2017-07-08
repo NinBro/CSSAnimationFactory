@@ -10,18 +10,7 @@ import { Button } from 'antd';
 export default class Sidebar extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      timeline: null
-    }
     this.handleChange = this.handleChange.bind(this);
-  }
-
-  componentWillMount() {
-    if (this.props.timeline) {
-      this.setState({
-        timeline: this.props.timeline
-      });
-    }
   }
 
   // Pass it up to parent....
@@ -45,6 +34,12 @@ export default class Sidebar extends React.Component {
           <CSSEditor data={this.props.data} onChange={this.handleChange} />
         </div>
         );
+    } else {
+      content = (
+        <div>
+          {data}
+        </div>
+      )
     }
 
     return (

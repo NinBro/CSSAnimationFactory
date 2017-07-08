@@ -54,10 +54,18 @@ export default class AnimationProperties extends React.Component {
       return value;
     });
 
-    newData.keyframes.push({
-      css: '', // EMPTY
-      position: 50
-    });
+    if (newData.keyframes) {
+      newData.keyframes.push({
+        css: '', // EMPTY
+        position: 50
+      });
+    } else {
+      newData.keyframes = [{
+        css: '', // EMPTY
+        position: 50
+      }];
+    }
+
 
     let sortedKeyframes = _.sortBy(newData.keyframes, [function(keyframe) { return keyframe.position; }]);
 
