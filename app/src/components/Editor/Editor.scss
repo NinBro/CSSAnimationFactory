@@ -1,0 +1,87 @@
+@import '../variables.scss';
+
+.Editor {
+  .sidebar {
+      padding-top: 20px;
+      padding-bottom: 20px;
+      box-sizing: border-box;
+
+      &.left-panel {
+        width: $left-panel-width;
+        display: inline-block;
+        z-index: 1;
+        position: relative;
+        height: 85%;
+        max-width: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+        background: #fcfcfc;
+
+        .content-container {
+          padding: 0 20px;
+
+          &.compiled-css {
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+            line-height: 1.25em;
+            letter-spacing: 0.05em;
+          }
+        }
+      }
+
+      &.right-panel {
+        display: none;
+        position: absolute;
+        top: 0;
+        right: -$left-panel-width;
+        bottom: 0;
+        height: 85%;
+        width: $left-panel-width;
+        background: #fcfcfc;
+        z-index: 1;
+        overflow: auto;
+
+        &.active {
+          display: block;
+          right: 0;
+        }
+
+        .tab {
+          display: none;
+
+          &.active {
+            display: block;
+          }
+        }
+      }
+
+      .content-container {
+        $spacing: 20px;
+        padding: $spacing;
+
+        .keyframe-editor-container {
+
+          + .keyframe-editor-container {
+            margin-top: $spacing;
+
+          }
+          input[type=text] {
+            text-align: right;
+            width: 40px;
+            background-color: #fcfcfc;
+            border-color: #fcfcfc;
+
+            &:hover {
+              background-color: #ffffff;
+              border-color: #d9d9d9;
+            }
+          }
+
+          .title.delete {
+            float: right;
+          }
+        }
+      }
+    }
+}

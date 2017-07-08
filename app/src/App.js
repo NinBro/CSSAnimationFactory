@@ -20,10 +20,13 @@ import React from 'react';
 import _ from 'lodash';
 import {Helmet} from "react-helmet";
 import Sidebar from './components/Sidebar/Sidebar.jsx';
+import classNames from 'classnames';
 import DatePicker from './components/DatePicker';
 import TimelineEditor from './components/TimelineEditor/TimelineEditor';
 import Preview from './components/Preview/Preview.jsx';
-import { Button } from 'antd';
+import Button from './components/Button.jsx';
+import Editor from './components/Editor/Editor.jsx';
+// import { Button } from 'antd';
 import './App.scss';
 
 export default class App extends React.Component {
@@ -38,6 +41,7 @@ constructor(props) {
     this.appEvent = this.appEvent.bind(this);
     this.state = {
       timelineCount: 0,
+      showEditor: true,
       // original state
       timelines: null,
       // Used for faster data modification
@@ -302,15 +306,31 @@ constructor(props) {
     });
   }
 
+  onClickShowEditor() {
+    this.setState({
+      showEditor: true
+    });
+  }
+
+  onClickHideEditor() {
+    this.setState({
+      showEditor: false
+    });
+  }
+
   // Renders Preview Pane
   renderPreviewContent() {
+    let full = '';
+    if (!this.state.showEditor) {
+      full = 'full';
+    }
     const timelines = this.state.timelines;
     const renderTimelines = timelines.map((timeline) =>
       <Preview {...timeline} />
     );
 
     return (
-      <div className="Preview preview" onClick={this.onClickPreview}>
+      <div className={classNames('Preview preview', full)} onClick={this.onClickPreview}>
         {renderTimelines}
       </div>
     );
@@ -446,6 +466,40 @@ constructor(props) {
       leftSidebarData = this.renderAnimationCSS(timelines);
     }
 
+    let editorData = {
+      leftSidebarData: leftSidebarData,
+      rightSidebarData: {
+        onChange: this.handleChange,
+        type: this.state.rightSidebarData.type,
+        data: this.state.rightSidebarData.data,
+        active: this.state.rightSidebarData.active
+      },
+      timelineEditor: {
+        appEvent: this.appEvent,
+        onClickTimelineTrack: this.onClickTimelineTrack,
+        timelines: timelines
+      }
+    };
+
+    let showEditorBtn = '';
+    let full = '';
+    let editor = '';
+    if (this.state.showEditor) {
+      full = 'full';
+      editor = <Editor editorData={editorData}/>;
+      showEditorBtn = (
+        <Button onClick={this.onClickHideEditor.bind(this)}>
+          Hide Editor
+        </Button>
+      );
+    } else {
+      showEditorBtn = (
+        <Button onClick={this.onClickShowEditor.bind(this)}>
+          Show Editor
+        </Button>
+      );
+    }
+
     return (
       <div id="animationFactory" className="app">
         <Helmet>
@@ -455,19 +509,12 @@ constructor(props) {
           <style type="text/css" id={animationCSS}>{this.renderAnimationCSS(timelines)}</style>
         </Helmet>
         <div className="navigation">
+          {showEditorBtn}
           <Button onClick={this.onclickAddNewTimeline.bind(this)}>Add Timeline</Button>
           <Button onClick={this.onClickEditBaseCSS.bind(this)}>Edit Base CSS</Button>
         </div>
         {this.renderPreviewContent()}
-        <Sidebar position="left" data={leftSidebarData} />
-        <Sidebar position="right"
-                 onChange={this.handleChange}
-                 type={this.state.rightSidebarData.type}
-                 data={this.state.rightSidebarData.data}
-                 active={this.state.rightSidebarData.active} />
-        <div className="timeline-editor-wrapper">
-          <TimelineEditor appEvent={this.appEvent} onClickTimelineTrack={this.onClickTimelineTrack} timelines={timelines} />
-        </div>
+        {editor}
       </div>
     );
   }

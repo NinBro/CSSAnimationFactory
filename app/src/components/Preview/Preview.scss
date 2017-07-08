@@ -12,6 +12,11 @@
   overflow-x: hidden;
   @include flexbox-vertical-align();
 
+  &.full {
+    height: 100%;
+    left: 0;
+  }
+
   .active {
     opacity: 0.5;
   }
