@@ -204,19 +204,44 @@ constructor(props) {
         return (descendantId && descendantId.id) || (timeline.id === timelineToUpdate.id);
       });
 
+      // Secondary match
       if (descendantId) {
         let descendantToUpdate = _.findIndex(this.state.timelines[0].descendants, function(descendant) { return descendant.id === descendantId.id; });
         timelines[0].descendants[descendantToUpdate] = timelineToUpdate;
 
         // var newSelected = _.extend({}, this.state.rightSidebarData);
         // newSelected.data = timelineToUpdate;
-        this.setState({
-          timelines: timelines
-        });
+        // this.setState({
+        //   timelines: timelines
+        // });
+      // Primary match
       } else if (match) {
         let timelineIdToUpdate = _.findIndex(this.state.timelines, function(timeline) { return timeline.id === match.id; });
         timelines[timelineIdToUpdate] = timelineToUpdate;
 
+        // let dataToSave = {
+        //   timelines: timelines
+        // };
+
+
+        // if (eventName && (eventName === 'onMouseEnter' || eventName === 'onMouseLeave')) {
+        //   // do nothing extra for hover state
+        // }
+
+        // // When self updating.....
+        // else if (this.state.rightSidebarData.active) {
+        //   dataToSave.rightSidebarData = {
+        //     active: true,
+        //     data: {
+        //       timeline: timelineToUpdate
+        //     }
+        //   }
+        // }
+
+        // this.setState(dataToSave);
+      }
+
+      if (descendantId || match) {
         let dataToSave = {
           timelines: timelines
         };
@@ -238,7 +263,6 @@ constructor(props) {
 
         this.setState(dataToSave);
       }
-
     }
   }
 

@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import AnimationProperties from './AnimationProperties';
 import CSSEditor from './../CSSEditor';
 import KeyframeEditor from './../KeyframeEditor';
+import './Sidebar.scss';
 import { Button } from 'antd';
 
 export default class Sidebar extends React.Component {
@@ -36,17 +37,15 @@ export default class Sidebar extends React.Component {
         );
     } else {
       content = (
-        <div>
+        <div className="content-container compiled-css">
           {data}
         </div>
       )
     }
 
     return (
-      <div className={classNames('sidebar', positionClass, stateClass)}>
-        <div className="content-container compiled-css">
-          {content}
-        </div>
+      <div className={classNames('Sidebar sidebar', positionClass, stateClass)}>
+        {content}
       </div>
     );
   }

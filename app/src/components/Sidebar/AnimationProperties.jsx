@@ -3,41 +3,45 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import KeyframeEditor from './../KeyframeEditor';
 import { Button } from 'antd';
+import { Input } from 'antd';
 
 export default class AnimationProperties extends React.Component {
   constructor(props) {
     super(props);
     this.onKeyframeEditorChange = this.onKeyframeEditorChange.bind(this);
     this.onClickAddKeyframe = this.onClickAddKeyframe.bind(this);
+    this.onValueChange = this.onValueChange.bind(this);
   }
-  // Pass it up to parent....
-  // handleChange(value) {
 
-  //   if (this.props) {
-  //   let newData = null;
-
-  //   // Create a temp instance of props
-  //   newData = _.mapValues(this.props, function(value) {
-  //     return value;
-  //   });
-
-  //   newData.keyframes = value;
-  //   // newData.keyframes = value;
-  //   this.props.onChange(newData);
-  //   }
-  // }
+  getProps() {
+    // Create a temp instance of props
+    return  _.mapValues(this.props, function(value) {
+      return value;
+    });
+  }
 
   // Pass it up to parent....
   onKeyframeEditorChange(value) {
     let newData = null;
 
     // Create a temp instance of props
-    newData = _.mapValues(this.props, function(value) {
-      return value;
-    });
+    newData = this.getProps();
 
     newData.keyframes = value;
     // newData.keyframes = value;
+    this.props.onChange(newData);
+  }
+
+  onValueChange(event) {
+    let value = _.isNumber(event.target.value) ? parseInt(event.target.value) : event.target.value;
+    let id = _.isNumber(event.target.id) ? parseInt(event.target.id) : event.target.id;
+    let newData = this.getProps();
+
+    switch(id) {
+      case 'classNames':
+        newData.classNames = value;
+    }
+
     this.props.onChange(newData);
   }
 
@@ -50,9 +54,7 @@ export default class AnimationProperties extends React.Component {
     let newData = null;
 
     // Create a temp instance of props
-    newData = _.mapValues(this.props, function(value) {
-      return value;
-    });
+    newData = this.getProps();
 
     if (newData.keyframes) {
       newData.keyframes.push({
@@ -81,14 +83,31 @@ export default class AnimationProperties extends React.Component {
   }
 
   render () {
-
     // console.log(this.props);
     return (
-      <div>
-        {this.props.timelineName}
-        <br/><br/>
+      <div className="content-container animation-properties">
+        <div>{this.props.timelineName}</div>
         <Button onClick={this.onClickAddKeyframe}>Add Keyframe</Button>
-        <br/><br/>
+        <div>
+          <div>Class Names</div>
+          <Input id="classNames" value={this.props.classNames} onChange={this.onValueChange} />
+        </div>
+        <div>
+          <div>Duration </div>
+          <Input id="duration" value={this.props.animationProperties.duration} onChange={this.onValueChange} />
+        </div>
+        <div>
+          <div>Iteration</div>
+          <Input id="iteration" value={this.props.animationProperties.iteration} onChange={this.onValueChange} />
+        </div>
+        <div>
+          <div>Timing-Function</div>
+          <Input id="timingFunction" value={this.props.animationProperties.timingFunction} onChange={this.onValueChange} />
+        </div>
+        <div>
+          <div>Direction </div>
+          <Input id="direction" value={this.props.animationProperties.animationDirection} onChange={this.onValueChange} />
+        </div>
         <KeyframeEditor keyframes={this.props.keyframes} onChange={this.onKeyframeEditorChange}  />
       </div>
     );

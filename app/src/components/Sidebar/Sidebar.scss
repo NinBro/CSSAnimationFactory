@@ -1,0 +1,11 @@
+@import '../variables.scss';
+
+.Sidebar {
+  > .content-container {
+    &.animation-properties {
+      > * + * {
+        margin-top: 20px;
+      }
+    }
+  }
+}
