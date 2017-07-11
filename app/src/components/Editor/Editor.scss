@@ -7,25 +7,25 @@
       box-sizing: border-box;
 
       &.left-panel {
-        width: $left-panel-width;
-        display: inline-block;
-        z-index: 1;
-        position: relative;
-        height: 85%;
-        max-width: 100%;
-        overflow-y: auto;
-        overflow-x: hidden;
-        background: #fcfcfc;
+        // width: $left-panel-width;
+        // display: inline-block;
+        // z-index: 1;
+        // position: relative;
+        // height: 85%;
+        // max-width: 100%;
+        // overflow-y: auto;
+        // overflow-x: hidden;
+        // background: #fcfcfc;
 
         .content-container {
           padding: 0 20px;
 
           &.compiled-css {
-            white-space: pre-wrap;
-            font-family: monospace;
-            font-size: 12px;
-            line-height: 1.25em;
-            letter-spacing: 0.05em;
+            // white-space: pre-wrap;
+            // font-family: monospace;
+            // font-size: 12px;
+            // line-height: 1.25em;
+            // letter-spacing: 0.05em;
           }
         }
       }

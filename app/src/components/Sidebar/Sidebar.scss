@@ -1,7 +1,35 @@
 @import '../variables.scss';
 
 .Sidebar {
+
+  &.left-panel {
+    position: absolute;
+    width: $left-panel-width;
+    display: inline-block;
+    z-index: 1;
+    height: 85%;
+    max-width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: rgba(252, 252, 252, 0.95);
+    transition: all 0.3s ease;
+
+    &:hover {
+      width: 100%;
+    }
+  }
+
   > .content-container {
+    &.compiled-css {
+      white-space: pre-wrap;
+      font-family: monospace;
+      font-size: 12px;
+      line-height: 1.25em;
+      letter-spacing: 0.05em;
+      white-space: pre;
+      overflow: auto;
+    }
+
     &.animation-properties {
       > * + * {
         margin-top: 20px;

@@ -26,6 +26,7 @@ import TimelineEditor from './components/TimelineEditor/TimelineEditor';
 import Preview from './components/Preview/Preview.jsx';
 import Button from './components/Button.jsx';
 import Editor from './components/Editor/Editor.jsx';
+
 // import { Button } from 'antd';
 import './App.scss';
 
@@ -354,24 +355,24 @@ constructor(props) {
     );
 
     return (
-      <div className={classNames('Preview preview', full)} onClick={this.onClickPreview}>
+      <div className={classNames('Preview preview', full)} onClick={this.onClickPreview} >
         {renderTimelines}
       </div>
     );
   }
 
   // Returns compiled CSS from {timelines} provided
-  renderAnimationCSS(timelines) {
+  renderAnimationCSS(timelines, type) {
     const _this = this;
     let css = '';
 
     _.each(timelines, function(timeline) {
-      css += _this.renderTimelineCSS(timeline);
+      css += _this.renderTimelineCSS(timeline, type);
 
       // Render nested timeline CSS
       if (timeline.descendants && timeline.descendants.length) {
         _.each(timeline.descendants, function(descendant) {
-          css += _this.renderTimelineCSS(descendant);
+          css += _this.renderTimelineCSS(descendant, type);
         });
       }
     });
@@ -379,19 +380,26 @@ constructor(props) {
     return css;
   }
 
-
-
-  renderTimelineCSS(timeline) {
+  renderTimelineCSS(timeline, type) {
     const _this = this;
     let css = '';
     if (timeline.animationProperties) {
-      css += _this.getAnimationProperties(timeline);
-      css += _this.renderAnimatedKeyframesCSS(timeline);
+      css += _this.getAnimationProperties(timeline, type);
+      if (type && type === 'preview') {
+        // do nothing
+      } else {
+        css += _this.renderAnimatedKeyframesCSS(timeline, type);
+      }
+
     }
 
     if (timeline.keyframes && timeline.keyframes.length) {
-      css += _this.getCSSKeyframes(timeline);
-      css += _this.getCSSKeyframeCursor(timeline);
+      css += _this.getCSSKeyframes(timeline, type);
+      if (type && type === 'preview') {
+        // do nothing
+      } else {
+        css += _this.getCSSKeyframeCursor(timeline);
+      }
     }
 
     return css;
@@ -406,7 +414,8 @@ constructor(props) {
       css +=  `
 .TimelineTrack[name="${timeline.timelineName}"] .animation-key {
   animation: ${timeline.timelineName}-cursor ${animationProperties.duration} infinite linear;
-}`;
+}
+`;
     }
 
     return css;
@@ -416,29 +425,40 @@ constructor(props) {
     // const keyframes = keyframes;
     let css = '';
 
-      css = `@keyframes ${timeline.timelineName}-cursor {
-        0% {
-          transform: translate(0%, 0);
-        }
+      css = `
+@keyframes ${timeline.timelineName}-cursor {
+  0% {
+    transform: translate(0%, 0);
+  }
 
-        100% {
-          transform: translate(100%, 0);
-        }
-      }`;
+  100% {
+    transform: translate(100%, 0);
+  }
+}
+`;
 
     return css;
   }
 
-  getAnimationProperties(timeline) {
+  getAnimationProperties(timeline, type) {
     // const keyframes = keyframes;
     let css = '';
     let animationProperties = timeline.animationProperties;
+    let preview = '';
+    if (type && type === 'preview') {
+
+    } else {
+      preview = '.preview ';
+
+    }
+
 
     if (animationProperties) {
       css += `
-.preview [name="${timeline.timelineName}"] {
+${preview}[name="${timeline.timelineName}"] {
   animation: ${timeline.timelineName} ${animationProperties.duration} ${animationProperties.iteration} ${animationProperties.timingFunction} ${animationProperties.animationDirection};
-}`;
+}
+`;
     }
 
     return css;
@@ -454,17 +474,20 @@ constructor(props) {
       _.each(keyframes, function(keyframe) {
         // keyframe.position && keyframe.position.length
         if (keyframe.css && keyframe.css.length) {
-          css += `${keyframe.position}% {
-            ${keyframe.css}
-          }`;
+          css +=
+            `\n  ${keyframe.position}% {\n` +
+            `    ${keyframe.css}\n` +
+            `  }\n`;
         }
       });
     }
 
     if (css) {
-      css = `@keyframes ${timeline.timelineName} {
-        ${css}
-      }`;
+      css = `
+@keyframes ${timeline.timelineName} {
+  ${css}
+}
+`;
     }
 
     return css;
@@ -484,10 +507,10 @@ constructor(props) {
     let leftSidebarData = '';
     // If timeline active show its css
     if (this.state.rightSidebarData.data && this.state.rightSidebarData.data.timeline) {
-      leftSidebarData = this.renderAnimationCSS([this.state.rightSidebarData.data.timeline]);
+      leftSidebarData = this.renderAnimationCSS([this.state.rightSidebarData.data.timeline], 'preview');
     // Otherwise show global css
     } else {
-      leftSidebarData = this.renderAnimationCSS(timelines);
+      leftSidebarData = this.renderAnimationCSS(timelines, 'preview');
     }
 
     let editorData = {

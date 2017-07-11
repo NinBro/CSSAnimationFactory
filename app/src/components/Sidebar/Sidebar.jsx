@@ -7,6 +7,13 @@ import CSSEditor from './../CSSEditor';
 import KeyframeEditor from './../KeyframeEditor';
 import './Sidebar.scss';
 import { Button } from 'antd';
+import CodeMirror from 'react-codemirror';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/mode/javascript/javascript';
+import 'codemirror/mode/xml/xml';
+import 'codemirror/mode/markdown/markdown';
+import 'codemirror/mode/css/css';
+import './../CodeMirrorOverride.scss';
 
 export default class Sidebar extends React.Component {
   constructor(props) {
@@ -25,6 +32,26 @@ export default class Sidebar extends React.Component {
     let stateClass = this.props.active ? 'active' : '';
 
     let content = null;
+
+
+
+let myModeSpec = {
+  name: "css"
+};
+
+let options = {
+  mode: myModeSpec,
+  readOnly: true,
+  cursorBlinkRate: 0
+};
+
+    // CODE MIRROR
+    // Have to manually re-update.... :/
+    if (this.refs && this.refs.cmEditor) {
+      this.refs.cmEditor.getCodeMirror().setValue(data);
+    }
+
+
     if (data && data.timeline) {
       content = (
         <AnimationProperties {...data.timeline} onChange={this.handleChange} />
@@ -37,9 +64,7 @@ export default class Sidebar extends React.Component {
         );
     } else {
       content = (
-        <div className="content-container compiled-css">
-          {data}
-        </div>
+        <CodeMirror ref="cmEditor" className="content-container compiled-css" value={data} options={options} />
       )
     }
 

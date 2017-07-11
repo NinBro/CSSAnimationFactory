@@ -40,6 +40,18 @@ export default class AnimationProperties extends React.Component {
     switch(id) {
       case 'classNames':
         newData.classNames = value;
+        break;
+      case 'duration':
+        newData.animationProperties.duration = value;
+        break;
+      case 'iteration':
+        newData.animationProperties.iteration = value;
+        break;
+      case 'timingFunction':
+        newData.animationProperties.timingFunction = value;
+        break;
+      case 'direction':
+        newData.animationProperties.animationDirection = value;
     }
 
     this.props.onChange(newData);
