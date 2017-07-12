@@ -9,9 +9,6 @@ import './Sidebar.scss';
 import { Button } from 'antd';
 import CodeMirror from 'react-codemirror';
 import 'codemirror/lib/codemirror.css';
-import 'codemirror/mode/javascript/javascript';
-import 'codemirror/mode/xml/xml';
-import 'codemirror/mode/markdown/markdown';
 import 'codemirror/mode/css/css';
 import './../CodeMirrorOverride.scss';
 

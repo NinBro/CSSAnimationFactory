@@ -2,14 +2,13 @@ import React from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
 import CSSEditor from './CSSEditor';
+import KeyframeEditorContainer from './KeyframeEditorContainer';
 import { Input } from 'antd';
 
 export default class KeyframeEditor extends React.Component {
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
-    this.onChangePosition = this.onChangePosition.bind(this);
-    this.onClickDeleteKeyframe = this.onClickDeleteKeyframe.bind(this);
   }
 
   // Pass it up to parent....
@@ -47,61 +46,19 @@ export default class KeyframeEditor extends React.Component {
     }
   }
 
-  onChangePosition(event) {
-    let value = parseInt(event.target.value);
-    let id = parseInt(event.target.id);
-    let childProps = {
-      id: id,
-      position: id
-    };
-
-    this.handleChange(value, childProps);
-  }
-
-  // onChangeCSS() {
-
-  // }
-
-  onClickDeleteKeyframe(event) {
-    // let value = parseInt(event.target.value);
-    let value = 'delete';
-    let id = parseInt(event.target.id);
-    let childProps = {
-      id: id,
-      position: id
-    };
-
-    this.handleChange(value, childProps);
-  }
-
-
-
   render () {
-
-    // renderKeyframes
     let renderKeyframes = '';
     if (this.props.keyframes && this.props.keyframes.length) {
       const keyframes = this.props.keyframes;
-      // console.log(keyframes);
-      renderKeyframes = keyframes.map((keyframe) =>
-        <div className="keyframe-editor-container" position={keyframe.position}>
-        <div className="keyframe-header">
-          <Input id={keyframe.position} position={keyframe.position} value={keyframe.position} onChange={this.onChangePosition} />
-          <span className="title">% Keyframe</span>
-          <span id={keyframe.position} position={keyframe.position} className="title delete" onClick={this.onClickDeleteKeyframe}>x</span>
-        </div>
 
-          <CSSEditor id={keyframe.position} css={keyframe.css} onChange={this.handleChange} />
-        </div>
+      renderKeyframes = keyframes.map((keyframe) =>
+        <KeyframeEditorContainer handleChange={this.handleChange} id={keyframe.position} {...keyframe} />
       );
     }
-    // console.log(this.props.keyframes);
 
     return (
       <div className={classNames('KeyframeEditor')}>
-        <div className="">
-          {renderKeyframes}
-        </div>
+        {renderKeyframes}
       </div>
     );
   }
