@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import classNames from 'classnames';
 import './TimelineTrack.scss';
 
@@ -11,7 +12,30 @@ export default class TimelineTrack extends React.Component {
   }
 
   Notch(props) {
-    return <div is class="notch" position={props.position}></div>
+
+      // Show label for each second
+      let i;
+      let markers = {};
+      let timelineLabel = '';
+      var duration = parseInt(props.animationProperties.duration);
+      var timeSegment = 100 / duration;
+      for (i = 0; i < duration + 1; i++) {
+        markers[timeSegment * i] = i + 's';
+      }
+
+      if (props.timelineName === 'Master' && !_.isEmpty(markers[props.position])) {
+        timelineLabel = (
+          <div className="time-label">
+            {markers[props.position]}
+          </div>)
+      }
+
+
+    return  (
+      <div is class="notch" position={props.position}>
+        {timelineLabel}
+      </div>
+    )
   }
 
   getNotches() {
@@ -19,7 +43,7 @@ export default class TimelineTrack extends React.Component {
     let notches = [];
     let i;
     for (i = 0; i < notchCnt; i++) {
-      notches.push(<this.Notch position={i} />);
+      notches.push(<this.Notch position={i} {...this.props} />);
     }
 
     return notches;
@@ -47,6 +71,8 @@ export default class TimelineTrack extends React.Component {
     if (this.props.type && this.props.type === 'secondary') {
       extraClasses = 'secondary';
     }
+
+    console.log(this.props)
 
     return (
       <div className={classNames('TimelineTrack timeline-track', extraClasses)} name={this.props.timelineName} onClick={this.onClick}>

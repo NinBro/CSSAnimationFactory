@@ -27,27 +27,17 @@ export default class Sidebar extends React.Component {
     let data = this.props.data;
     let positionClass = this.props.position ? this.props.position + '-panel' : '';
     let stateClass = this.props.active ? 'active' : '';
-
     let content = null;
 
+    let myModeSpec = {
+      name: "css"
+    };
 
-
-let myModeSpec = {
-  name: "css"
-};
-
-let options = {
-  mode: myModeSpec,
-  readOnly: true,
-  cursorBlinkRate: 0
-};
-
-    // CODE MIRROR
-    // Have to manually re-update.... :/
-    if (this.refs && this.refs.cmEditor) {
-      this.refs.cmEditor.getCodeMirror().setValue(data);
-    }
-
+    let options = {
+      mode: myModeSpec,
+      readOnly: true,
+      cursorBlinkRate: 0
+    };
 
     if (data && data.timeline) {
       content = (
@@ -60,6 +50,14 @@ let options = {
         </div>
         );
     } else {
+
+      // CODE MIRROR
+      // Have to manually re-update.... :/
+      if (this.refs && this.refs.cmEditor) {
+        if (this.props.data !== this.refs.cmEditor.getCodeMirror().getValue()) {
+          this.refs.cmEditor.getCodeMirror().setValue(data);
+        }
+      }
       content = (
         <CodeMirror ref="cmEditor" className="content-container compiled-css" value={data} options={options} />
       )

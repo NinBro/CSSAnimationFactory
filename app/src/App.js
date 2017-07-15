@@ -361,7 +361,40 @@ constructor(props) {
     );
   }
 
+  // @param timeslines {array}
+  timelinesGet(timelines, callback) {
+    const _this = this;
+    let css = '';
+    let results = [];
+
+    _.each(timelines, function(timeline) {
+      // css += _this.renderTimelineCSS(timeline, type);
+      results.push(callback(timeline));
+
+      // Render nested timeline CSS
+      if (timeline.descendants && timeline.descendants.length) {
+        _.each(timeline.descendants, function(descendant) {
+          // css += _this.renderTimelineCSS(descendant, type);
+          results.push(callback(descendant));
+        });
+      }
+    });
+
+    return results;
+  }
+
+  getTimelineName(value) {
+    console.log(value.timelineName);
+  };
+
+  getTimelineDuration(value) {
+    // console.log(value.animationProperties.duration);
+    return parseInt(value.animationProperties.duration);
+  };
+
+
   // Returns compiled CSS from {timelines} provided
+  // @param timelines {array}
   renderAnimationCSS(timelines, type) {
     const _this = this;
     let css = '';
@@ -501,8 +534,7 @@ ${preview}[name="${timeline.timelineName}"] {
     let animationCSS = 'animationCSS';
     const timelines = this.state.timelines;
 
-    console.log('timelines', timelines);
-    console.log('RENDER IT!!!!!');
+
 
     let leftSidebarData = '';
     // If timeline active show its css
@@ -513,6 +545,39 @@ ${preview}[name="${timeline.timelineName}"] {
       leftSidebarData = this.renderAnimationCSS(timelines, 'preview');
     }
 
+
+    let durations = this.timelinesGet(timelines, this.getTimelineDuration);
+    let longestDuration = Math.max.apply(Math, durations);
+
+    console.log(durations, longestDuration);
+
+    let masterTimeline =
+      {
+        timelineName : 'Master',
+        classNames : 'master',
+        type : 'normal',
+        animationProperties : {
+          animationDirection : 'normal',
+          duration : longestDuration + 's',
+          iteration : 'infinite',
+          timingFunction : 'linear'
+        },
+        keyframes : [
+          {
+            position : 0,
+            css : ' transform: rotate(0deg);'
+          },
+          {
+            position : 100,
+            css : ' transform: rotate(360deg);'
+          }
+        ]
+      };
+
+
+      this.timelinesGet([masterTimeline], this.getTimelineName);
+
+    let animateCSS = this.renderAnimationCSS(timelines) + this.renderAnimatedKeyframesCSS(masterTimeline) + this.getCSSKeyframeCursor(masterTimeline);
     let editorData = {
       leftSidebarData: leftSidebarData,
       rightSidebarData: {
@@ -524,7 +589,8 @@ ${preview}[name="${timeline.timelineName}"] {
       timelineEditor: {
         appEvent: this.appEvent,
         onClickTimelineTrack: this.onClickTimelineTrack,
-        timelines: timelines
+        timelines: timelines,
+        masterTimeline: masterTimeline
       }
     };
 
@@ -553,7 +619,7 @@ ${preview}[name="${timeline.timelineName}"] {
           <meta charSet="utf-8" />
           <title>CSS Animation Factory</title>
           <style type="text/css" id={baseCSS}>{this.state.baseCSS}</style>
-          <style type="text/css" id={animationCSS}>{this.renderAnimationCSS(timelines)}</style>
+          <style type="text/css" id={animationCSS}>{animateCSS}</style>
         </Helmet>
         <div className="navigation">
           {showEditorBtn}

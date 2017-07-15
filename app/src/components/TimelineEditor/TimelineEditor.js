@@ -60,7 +60,7 @@ export default class TimelineEditor extends React.Component {
     return (
       <div className="timeline-editor">
         <div className="timelines master">
-          <TimelineTrack timelineName="Master" />
+          <TimelineTrack {...this.props.masterTimeline} />
         </div>
         <div className="timelines normal">
           {timelinesHTML}
