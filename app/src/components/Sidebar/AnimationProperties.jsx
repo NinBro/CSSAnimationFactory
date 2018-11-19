@@ -10,6 +10,14 @@ export default class AnimationProperties extends React.Component {
     super(props);
     this.onKeyframeEditorChange = this.onKeyframeEditorChange.bind(this);
     this.onClickAddKeyframe = this.onClickAddKeyframe.bind(this);
+    this.pauseAnimation = this.pauseAnimation.bind(this);
+    this.playAnimation = this.playAnimation.bind(this);
+
+
+
+
+
+
     this.onValueChange = this.onValueChange.bind(this);
   }
 
@@ -60,6 +68,11 @@ export default class AnimationProperties extends React.Component {
   // TODO
   // 1) Do not allow duplicates
   // 2) Add keyframe to nearest after first one
+
+
+  /*
+   * @returns {object} updated timeline props
+   */
   onClickAddKeyframe() {
     console.log('hiiiii');
 
@@ -84,10 +97,49 @@ export default class AnimationProperties extends React.Component {
     let sortedKeyframes = _.sortBy(newData.keyframes, [function(keyframe) { return keyframe.position; }]);
 
     newData.keyframes = sortedKeyframes;
-    // console.log(newData);
+    console.log('onClickAddKeyframe', newData);
 
     // newData.keyframes = value;
     this.props.onChange(newData);
+  }
+
+  pauseAnimation() {
+    let newData = this.getProps();
+    const timelineProperties = { playState: 'paused'};
+
+    if (_.isObject(newData.timelineProperties)) {
+      newData.timelineProperties.playState = 'paused';
+    } else {
+      newData.timelineProperties = timelineProperties;
+    }
+
+    console.log('pauseAnimation', newData);
+    this.props.onChange(newData);
+  }
+
+  playAnimation() {
+    let newData = this.getProps();
+    const timelineProperties = { playState: 'running'};
+
+    if (_.isObject(newData.timelineProperties)) {
+      newData.timelineProperties.playState = 'running';
+    } else {
+      newData.timelineProperties = timelineProperties;
+    }
+
+    console.log('pauseAnimation', newData);
+    this.props.onChange(newData);
+  }
+
+  renderAnimationStateBtn(timelineProperties) {
+    let element = null;
+    if (timelineProperties && timelineProperties.playState && timelineProperties.playState === 'paused') {
+      element = <Button onClick={this.playAnimation}>Play</Button>;
+    } else {
+      element = <Button onClick={this.pauseAnimation}>Pause</Button>;
+    }
+
+    return element;
   }
 
   onClickDeleteKeyframe() {
@@ -95,10 +147,17 @@ export default class AnimationProperties extends React.Component {
   }
 
   render () {
-    // console.log(this.props);
+    const { timelineProperties } = this.props;
+
+
+
+    console.log('AnimationProperties render', this.props);
     return (
       <div className="content-container animation-properties">
-        <div>{this.props.timelineName}</div>
+        <div>
+          {this.props.timelineName}
+          { this.renderAnimationStateBtn(timelineProperties) }
+        </div>
         <Button onClick={this.onClickAddKeyframe}>Add Keyframe</Button>
         <div>
           <div>Class Names</div>

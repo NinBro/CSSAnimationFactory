@@ -72,7 +72,7 @@ export default class TimelineTrack extends React.Component {
       extraClasses = 'secondary';
     }
 
-    console.log(this.props)
+    // console.log(this.props)
 
     return (
       <div className={classNames('TimelineTrack timeline-track', extraClasses)} name={this.props.timelineName} onClick={this.onClick}>

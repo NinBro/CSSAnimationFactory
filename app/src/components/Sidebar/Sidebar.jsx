@@ -39,6 +39,8 @@ export default class Sidebar extends React.Component {
       cursorBlinkRate: 0
     };
 
+    console.log('Sidebar - render', options, data);
+
     if (data && data.timeline) {
       content = (
         <AnimationProperties {...data.timeline} onChange={this.handleChange} />

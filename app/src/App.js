@@ -394,8 +394,9 @@ constructor(props) {
 
 
   // Returns compiled CSS from {timelines} provided
-  // @param timelines {array}
+  // @param {array} timelines
   renderAnimationCSS(timelines, type) {
+    console.log('renderAnimationCSS', timelines, type);
     const _this = this;
     let css = '';
 
@@ -526,6 +527,16 @@ ${preview}[name="${timeline.timelineName}"] {
     return css;
   }
 
+  /*
+   * @param {array} timelines
+   * @param {object} masterTimeline
+   * @returns {string}
+   */
+  compileAnimationCSS(timelines, masterTimeline) {
+    console.log('compileAnimationCSS', timelines, masterTimeline);
+    return this.renderAnimationCSS(timelines) + this.renderAnimatedKeyframesCSS(masterTimeline) + this.getCSSKeyframeCursor(masterTimeline);
+  }
+
 
   render() {
     let _this = this;
@@ -549,7 +560,7 @@ ${preview}[name="${timeline.timelineName}"] {
     let durations = this.timelinesGet(timelines, this.getTimelineDuration);
     let longestDuration = Math.max.apply(Math, durations);
 
-    console.log(durations, longestDuration);
+    // console.log(durations, longestDuration);
 
     let masterTimeline =
       {
@@ -577,7 +588,7 @@ ${preview}[name="${timeline.timelineName}"] {
 
       this.timelinesGet([masterTimeline], this.getTimelineName);
 
-    let animateCSS = this.renderAnimationCSS(timelines) + this.renderAnimatedKeyframesCSS(masterTimeline) + this.getCSSKeyframeCursor(masterTimeline);
+    // let animateCSS = this.renderAnimationCSS(timelines) + this.renderAnimatedKeyframesCSS(masterTimeline) + this.getCSSKeyframeCursor(masterTimeline);
     let editorData = {
       leftSidebarData: leftSidebarData,
       rightSidebarData: {
@@ -619,7 +630,7 @@ ${preview}[name="${timeline.timelineName}"] {
           <meta charSet="utf-8" />
           <title>CSS Animation Factory</title>
           <style type="text/css" id={baseCSS}>{this.state.baseCSS}</style>
-          <style type="text/css" id={animationCSS}>{animateCSS}</style>
+          <style type="text/css" id={animationCSS}>{this.compileAnimationCSS(timelines, masterTimeline)}</style>
         </Helmet>
         <div className="navigation">
           {showEditorBtn}
