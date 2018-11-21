@@ -78,6 +78,8 @@ export default class TimelineTrack extends React.Component {
       <div className={classNames('TimelineTrack timeline-track', extraClasses)} name={this.props.timelineName} onClick={this.onClick}>
         <div className="timeline-meta">
           <input type="text" className="name" value={this.props.timelineName} />
+          <span>Pause</span>
+          <span>Hide</span>
         </div>
         <div className="timeline" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
           <div className="animation-key"/>

@@ -125,6 +125,7 @@ body {
 
 
         .timeline-editor {
+          $meta-width: 300px;
           background: #6F6F6F;
           height: 100%;
 
@@ -148,9 +149,10 @@ body {
             }
 
             .timeline-meta {
+
               position: absolute;
               float: left;
-              width: 230px;
+              width: $meta-width;
               background: grey;
               color: white;
               z-index: 1;
@@ -171,7 +173,7 @@ body {
 
           .timeline {
           position: relative;
-            margin-left: 232px;
+            margin-left: $meta-width + 2px;
             height: 20px;
 
             .notches {

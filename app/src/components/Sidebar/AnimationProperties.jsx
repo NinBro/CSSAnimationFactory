@@ -12,6 +12,11 @@ export default class AnimationProperties extends React.Component {
     this.onClickAddKeyframe = this.onClickAddKeyframe.bind(this);
     this.pauseAnimation = this.pauseAnimation.bind(this);
     this.playAnimation = this.playAnimation.bind(this);
+    this.updateTimelineProperties = this.updateTimelineProperties.bind(this);
+
+
+
+
 
 
 
@@ -104,30 +109,54 @@ export default class AnimationProperties extends React.Component {
   }
 
   pauseAnimation() {
-    let newData = this.getProps();
-    const timelineProperties = { playState: 'paused'};
+    // let newData = this.getProps();
+    // const timelineProperties = { playState: 'paused'};
 
-    if (_.isObject(newData.timelineProperties)) {
-      newData.timelineProperties.playState = 'paused';
-    } else {
-      newData.timelineProperties = timelineProperties;
-    }
+    // if (_.isObject(newData.timelineProperties)) {
+    //   newData.timelineProperties.playState = 'paused';
+    // } else {
+    //   newData.timelineProperties = timelineProperties;
+    // }
 
-    console.log('pauseAnimation', newData);
-    this.props.onChange(newData);
+    // console.log('pauseAnimation');
+    // this.props.onChange(newData);
+
+    this.updateTimelineProperties({ playState: 'paused'});
   }
 
   playAnimation() {
-    let newData = this.getProps();
-    const timelineProperties = { playState: 'running'};
+    // let newData = this.getProps();
+    // const timelineProperties = { playState: 'running'};
 
-    if (_.isObject(newData.timelineProperties)) {
-      newData.timelineProperties.playState = 'running';
+    // if (_.isObject(newData.timelineProperties)) {
+    //   newData.timelineProperties.playState = 'running';
+    // } else {
+    //   newData.timelineProperties = timelineProperties;
+    // }
+
+    // console.log('pauseAnimation');
+    // this.props.onChange(newData);
+
+
+    this.updateTimelineProperties({ playState: 'running'});
+  }
+
+  /*
+   * {object} timelineProps
+   */
+  updateTimelineProperties(timelineProps) {
+    let currentData = this.getProps();
+    // const timelineProperties = { playState: 'running'};
+
+    let newData = currentData;
+    if (_.isObject(currentData.timelineProperties)) {
+      let mergedProps = _.merge({}, currentData.timelineProperties, timelineProps);
+      newData.timelineProperties = mergedProps;
     } else {
-      newData.timelineProperties = timelineProperties;
+      newData.timelineProperties = timelineProps;
     }
 
-    console.log('pauseAnimation', newData);
+    // console.log('updateTimelineProperties', newData);
     this.props.onChange(newData);
   }
 
@@ -142,6 +171,17 @@ export default class AnimationProperties extends React.Component {
     return element;
   }
 
+  renderVisibilityBtn(timelineProperties) {
+    let element = null;
+    if (timelineProperties && timelineProperties.visible === false) {
+      element = <Button onClick={() => {this.updateTimelineProperties({visible: true})}}>Show</Button>;
+    } else {
+      element = <Button onClick={() => {this.updateTimelineProperties({visible: false})}}>Hide</Button>;
+    }
+
+    return element;
+  }
+
   onClickDeleteKeyframe() {
 
   }
@@ -151,12 +191,13 @@ export default class AnimationProperties extends React.Component {
 
 
 
-    console.log('AnimationProperties render', this.props);
+    // console.log('AnimationProperties render', this.props);
     return (
       <div className="content-container animation-properties">
         <div>
           {this.props.timelineName}
           { this.renderAnimationStateBtn(timelineProperties) }
+          { this.renderVisibilityBtn(timelineProperties) }
         </div>
         <Button onClick={this.onClickAddKeyframe}>Add Keyframe</Button>
         <div>

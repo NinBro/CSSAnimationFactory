@@ -392,12 +392,17 @@ constructor(props) {
     return parseInt(value.animationProperties.duration);
   };
 
-
-  // Returns compiled CSS from {timelines} provided
-  // @param {array} timelines
+  /*
+   * Returns compiled CSS from {timelines} provided
+   * @param {array} timelines
+   * @param {string} type
+   * @returns {string} CSS
+   */
   renderAnimationCSS(timelines, type) {
     console.log('renderAnimationCSS', timelines, type);
     const _this = this;
+    const lineBreak = '\n';
+    const indent = '  ';
     let css = '';
 
     _.each(timelines, function(timeline) {
@@ -406,52 +411,78 @@ constructor(props) {
       // Render nested timeline CSS
       if (timeline.descendants && timeline.descendants.length) {
         _.each(timeline.descendants, function(descendant) {
-          css += _this.renderTimelineCSS(descendant, type);
+          css += lineBreak + lineBreak + _this.renderTimelineCSS(descendant, type);
         });
       }
     });
 
+    // console.log('renderAnimationCSS', css);
     return css;
   }
 
+  /*
+   * Render timeline CSS
+   * @param {object} timeline
+   * @param {string} type
+   * @returns {string} CSS
+   */
   renderTimelineCSS(timeline, type) {
     const _this = this;
+    const lineBreak = '\n';
+    const indent = '  ';
+
     let css = '';
     if (timeline.animationProperties) {
       css += _this.getAnimationProperties(timeline, type);
       if (type && type === 'preview') {
         // do nothing
       } else {
-        css += _this.renderAnimatedKeyframesCSS(timeline, type);
+        css += lineBreak + lineBreak + _this.renderAnimatedKeyframesCSS(timeline, type);
       }
-
     }
 
     if (timeline.keyframes && timeline.keyframes.length) {
-      css += _this.getCSSKeyframes(timeline, type);
+      css += lineBreak + lineBreak + _this.getCSSKeyframes(timeline, type);
       if (type && type === 'preview') {
         // do nothing
       } else {
-        css += _this.getCSSKeyframeCursor(timeline);
+        css += lineBreak + _this.getCSSKeyframeCursor(timeline);
       }
     }
 
+    // console.log('renderTimelineCSS', css);
     return css;
   }
 
+  /*
+   * Render
+   * @param {object} timeline
+   * @returns {string}
+   */
   renderAnimatedKeyframesCSS(timeline) {
     // const keyframes = keyframes;
     let css = '';
     let animationProperties = timeline.animationProperties;
+    const lineBreak = '\n';
+    const indent = '  ';
 
     if (animationProperties) {
-      css +=  `
-.TimelineTrack[name="${timeline.timelineName}"] .animation-key {
-  animation: ${timeline.timelineName}-cursor ${animationProperties.duration} infinite linear;
-}
-`;
+      const selectorOpen = `.TimelineTrack[name="${timeline.timelineName}"] .animation-key {`;
+      const animation = `animation: ${timeline.timelineName}-cursor ${animationProperties.duration} infinite linear;`;
+      const selectorClose = `}`;
+
+
+
+//       css +=  `
+// .TimelineTrack[name="${timeline.timelineName}"] .animation-key {
+//   animation: ${timeline.timelineName}-cursor ${animationProperties.duration} infinite linear;
+// }
+// `;
+
+      css = selectorOpen + lineBreak + indent + animation + lineBreak + selectorClose;
     }
 
+    // console.log('renderAnimatedKeyframesCSS', css);
     return css;
   }
 
@@ -474,56 +505,119 @@ constructor(props) {
     return css;
   }
 
+  /*
+   * Render
+   * @param {object} timeline
+   * @param {string} type
+   * @returns {string} CSS
+   */
   getAnimationProperties(timeline, type) {
+    console.log('getAnimationProperties', timeline, type);
+    const { animationProperties, timelineProperties } = timeline;
+
+
+      const lineBreak = '\n';
+      const indent = '  ';
+
     // const keyframes = keyframes;
     let css = '';
-    let animationProperties = timeline.animationProperties;
+    // let animationProperties = timeline.animationProperties;
     let preview = '';
     if (type && type === 'preview') {
 
     } else {
       preview = '.preview ';
-
     }
 
+    let animationPlayState = '';
+    if (_.isObject(timelineProperties) && timelineProperties.playState) {
+      animationPlayState = lineBreak + indent + `animation-play-state: ${timelineProperties.playState};`;
+    }
 
-    if (animationProperties) {
-      css += `
-${preview}[name="${timeline.timelineName}"] {
-  animation: ${timeline.timelineName} ${animationProperties.duration} ${animationProperties.iteration} ${animationProperties.timingFunction} ${animationProperties.animationDirection};
-}
-`;
+    let visibility = '';
+    if (_.isObject(timelineProperties) && !_.isUndefined(timelineProperties.visible)) {
+      let visibilityState;
+      if (timelineProperties.visible) {
+        visibilityState = 'visible';
+      } else {
+        visibilityState = 'hidden';
+      }
+      visibility = lineBreak + indent + `visibility: ${visibilityState};`;
+    }
+
+    if (_.isObject(animationProperties)) {
+      let selectorOpen = `${preview}[name="${timeline.timelineName}"] {`;
+      let selectorAnimation = `animation: ${timeline.timelineName} ${animationProperties.duration} ${animationProperties.iteration} ${animationProperties.timingFunction} ${animationProperties.animationDirection};`;
+      let selectorClose = `}`;
+
+//       css +=
+// `
+// ${preview}[name="${timeline.timelineName}"] {
+//   animation: ${timeline.timelineName} ${animationProperties.duration} ${animationProperties.iteration} ${animationProperties.timingFunction} ${animationProperties.animationDirection};
+//   ${animationPlayState}
+// }
+// `;
+
+      css = selectorOpen + lineBreak + indent + selectorAnimation + animationPlayState + visibility + lineBreak + selectorClose;
+
     }
 
     return css;
   }
 
-  getCSSKeyframes(timeline) {
-    // const keyframes = keyframes;
-    let css = '';
-    let keyframes = timeline.keyframes;
 
+  /*
+   * @param {object} timeline
+   */
+  getCSSKeyframes(timeline) {
+    let keyframes = timeline.keyframes;
+    const lineBreak = '\n';
+    const indent = '  ';
+
+    let css = this.generateCSSKeyframes(keyframes, 2);
+    if (css) {
+      const selectorOpen = `@keyframes ${timeline.timelineName} {`;
+      const selectorClose = `}`;
+
+      css = selectorOpen + lineBreak + css + lineBreak + selectorClose;
+    }
+
+    // console.log('getCSSKeyframes', css);
+    return css;
+  }
+  /*
+   * @param {array} keyframes
+   * @param {number} indentDepth
+   * @returns {string}
+   */
+  generateCSSKeyframes(keyframes, indentDepth) {
+    const lineBreak = '\n';
+    const indentChar = '  ';
+    let css = '';
+
+    let indentAmt = indentDepth || 1;
+    let indentPrefix = indentChar.repeat((indentAmt - 1));
+    let indent = indentChar.repeat(indentAmt);
 
     if (keyframes && keyframes.length) {
-      _.each(keyframes, function(keyframe) {
+      _.each(keyframes, (keyframe, i) => {
+
         // keyframe.position && keyframe.position.length
+        const selectorOpen = `${indentPrefix}${keyframe.position}% {`;
+        const selectorClose = `${indentPrefix}}`;
+
+        let conditionalBreak = '';
+        if (i !== 0) {
+          conditionalBreak = lineBreak + lineBreak;
+        }
+
         if (keyframe.css && keyframe.css.length) {
-          css +=
-            `\n  ${keyframe.position}% {\n` +
-            `    ${keyframe.css}\n` +
-            `  }\n`;
+          css += conditionalBreak + selectorOpen + lineBreak + indent + _.trim(keyframe.css) + lineBreak + selectorClose;
         }
       });
     }
 
-    if (css) {
-      css = `
-@keyframes ${timeline.timelineName} {
-  ${css}
-}
-`;
-    }
-
+    // console.log('generateCSSKeyframes', css);
     return css;
   }
 
@@ -537,33 +631,16 @@ ${preview}[name="${timeline.timelineName}"] {
     return this.renderAnimationCSS(timelines) + this.renderAnimatedKeyframesCSS(masterTimeline) + this.getCSSKeyframeCursor(masterTimeline);
   }
 
-
-  render() {
-    let _this = this;
-    let SidebarClasses = 'active';
-    let baseCSS = 'baseCSS';
-    let animationCSS = 'animationCSS';
-    const timelines = this.state.timelines;
-
-
-
-    let leftSidebarData = '';
-    // If timeline active show its css
-    if (this.state.rightSidebarData.data && this.state.rightSidebarData.data.timeline) {
-      leftSidebarData = this.renderAnimationCSS([this.state.rightSidebarData.data.timeline], 'preview');
-    // Otherwise show global css
-    } else {
-      leftSidebarData = this.renderAnimationCSS(timelines, 'preview');
-    }
-
+  /*
+   * @param {array} timelines
+   * @returns {object}
+   */
+  getMasterTimeline(timelines) {
 
     let durations = this.timelinesGet(timelines, this.getTimelineDuration);
     let longestDuration = Math.max.apply(Math, durations);
 
-    // console.log(durations, longestDuration);
-
-    let masterTimeline =
-      {
+    return {
         timelineName : 'Master',
         classNames : 'master',
         type : 'normal',
@@ -584,11 +661,21 @@ ${preview}[name="${timeline.timelineName}"] {
           }
         ]
       };
+  }
 
+  /*
+   * {array} timelines
+   */
+  renderEditor(timelines) {
+    let leftSidebarData = '';
+    // If timeline active show its css
+    if (this.state.rightSidebarData.data && this.state.rightSidebarData.data.timeline) {
+      leftSidebarData = this.renderAnimationCSS([this.state.rightSidebarData.data.timeline], 'preview');
+    // Otherwise show global css
+    } else {
+      leftSidebarData = this.renderAnimationCSS(timelines, 'preview');
+    }
 
-      this.timelinesGet([masterTimeline], this.getTimelineName);
-
-    // let animateCSS = this.renderAnimationCSS(timelines) + this.renderAnimatedKeyframesCSS(masterTimeline) + this.getCSSKeyframeCursor(masterTimeline);
     let editorData = {
       leftSidebarData: leftSidebarData,
       rightSidebarData: {
@@ -601,28 +688,48 @@ ${preview}[name="${timeline.timelineName}"] {
         appEvent: this.appEvent,
         onClickTimelineTrack: this.onClickTimelineTrack,
         timelines: timelines,
-        masterTimeline: masterTimeline
+        masterTimeline: this.getMasterTimeline(timelines)
       }
     };
 
-    let showEditorBtn = '';
-    let full = '';
-    let editor = '';
+    let editorNode;
     if (this.state.showEditor) {
-      full = 'full';
-      editor = <Editor editorData={editorData}/>;
-      showEditorBtn = (
+      editorNode = <Editor editorData={editorData}/>;;
+    } else {
+      editorNode = null;
+    }
+
+    return editorNode;
+  }
+
+  /*
+   * @param {boolean} showEditor
+   * @returns {node}
+   */
+  renderEditorBtn(showEditor) {
+    let element;
+    if (showEditor) {
+      element = (
         <Button onClick={this.onClickHideEditor.bind(this)}>
           Hide Editor
         </Button>
       );
     } else {
-      showEditorBtn = (
+      element = (
         <Button onClick={this.onClickShowEditor.bind(this)}>
           Show Editor
         </Button>
       );
     }
+
+    return element;
+  }
+
+  render() {
+    let _this = this;
+    let baseCSS = 'baseCSS';
+    let animationCSS = 'animationCSS';
+    const timelines = this.state.timelines;
 
     return (
       <div id="animationFactory" className="app">
@@ -630,15 +737,15 @@ ${preview}[name="${timeline.timelineName}"] {
           <meta charSet="utf-8" />
           <title>CSS Animation Factory</title>
           <style type="text/css" id={baseCSS}>{this.state.baseCSS}</style>
-          <style type="text/css" id={animationCSS}>{this.compileAnimationCSS(timelines, masterTimeline)}</style>
+          <style type="text/css" id={animationCSS}>{this.compileAnimationCSS(timelines, this.getMasterTimeline(timelines))}</style>
         </Helmet>
         <div className="navigation">
-          {showEditorBtn}
+          {this.renderEditorBtn(this.state.showEditor)}
           <Button onClick={this.onclickAddNewTimeline.bind(this)}>Add Timeline</Button>
           <Button onClick={this.onClickEditBaseCSS.bind(this)}>Edit Base CSS</Button>
         </div>
         {this.renderPreviewContent()}
-        {editor}
+        {this.renderEditor(timelines)}
       </div>
     );
   }

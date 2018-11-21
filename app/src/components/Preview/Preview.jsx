@@ -19,10 +19,15 @@ export default class Preview extends React.Component {
     if (this.props.descendants && this.props.descendants.length) {
       const descendants = this.props.descendants;
       // console.log(descendants);
-      renderDescendants = descendants.map((descendant) =>
-        <TimelinePreview name={descendant.timelineName} className={descendant.classNames} active={descendant.active} />
+      renderDescendants = descendants.map((descendant) => {
+        // console.log(descendant);
+        const { timelineName, classNames, active, ...props} = descendant;
+        return <TimelinePreview name={timelineName} className={classNames} active={active} {...props} />
+      }
       );
     }
+
+    // console.log('Preview - render', this.props);
 
     return (
       <div name={this.props.timelineName} className={classNames(this.props.classNames, active)}>

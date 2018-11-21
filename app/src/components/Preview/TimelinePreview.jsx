@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import _ from 'lodash';
 
 export default class TimelinePreview extends React.Component {
   constructor(props) {
@@ -7,13 +8,23 @@ export default class TimelinePreview extends React.Component {
   }
 
   render () {
-    let active = '';
-    if (this.props.active) {
-      active = 'active';
+    const { active, className, name, timelineProperties } = this.props;
+    let activeStyle = '';
+    if (active) {
+      activeStyle = 'active';
     }
 
+    // console.log('TimelinePreview - render', this.props);
+
+    // let element;
+    // if (_.isObject(timelineProperties) && timelineProperties.visible === false) {
+    //   element = null;
+    // } else {
+    //   element = <div name={name} className={classNames(className, activeStyle)} />;;
+    // }
+
     return (
-      <div name={this.props.name} className={classNames(this.props.className, active)} />
+      <div name={name} className={classNames(className, activeStyle)} />
     );
   }
 }
