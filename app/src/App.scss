@@ -114,6 +114,8 @@ body {
   // }
 
     .timeline-editor-wrapper {
+      $active-color: #446bcc;
+      $active-hover-color: #7593de;
         z-index: 2;
         position: fixed;
         bottom: 0;
@@ -130,9 +132,35 @@ body {
           height: 100%;
 
 
+
           // secondary...
 
           .timeline-track {
+            &:hover {
+              .timeline-meta {
+                background-color: #898585;
+              }
+
+              .timeline {
+                background-color: #898585;
+              }
+            }
+
+            &.active {
+              background-color: $active-color;
+
+              &:hover {
+
+
+                .timeline-meta {
+                  background-color: $active-hover-color;
+                }
+
+                .timeline {
+                  background-color: $active-hover-color;
+                }
+              }
+            }
 
             &.secondary {
               .timeline-meta {
@@ -149,7 +177,6 @@ body {
             }
 
             .timeline-meta {
-
               position: absolute;
               float: left;
               width: $meta-width;
@@ -161,18 +188,26 @@ body {
               font-family: Verdana, Geneva, sans-serif;
               font-size: 13px;
 
+              &.active {
+                background-color: $active-color;
+
+                &:hover {
+                  background-color: $active-hover-color;
+                }
+              }
+
               > .name {
-                  background: none;
-              color: white;
-              border: none;
-              padding: 3px;
+                background: none;
+                color: white;
+                border: none;
+                padding: 3px;
               }
             }
           }
 
 
           .timeline {
-          position: relative;
+            position: relative;
             margin-left: $meta-width + 2px;
             height: 20px;
 

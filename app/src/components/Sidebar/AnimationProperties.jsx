@@ -8,21 +8,9 @@ import { Input } from 'antd';
 export default class AnimationProperties extends React.Component {
   constructor(props) {
     super(props);
+    this.updateTimelineProperties = this.updateTimelineProperties.bind(this);
     this.onKeyframeEditorChange = this.onKeyframeEditorChange.bind(this);
     this.onClickAddKeyframe = this.onClickAddKeyframe.bind(this);
-    this.pauseAnimation = this.pauseAnimation.bind(this);
-    this.playAnimation = this.playAnimation.bind(this);
-    this.updateTimelineProperties = this.updateTimelineProperties.bind(this);
-
-
-
-
-
-
-
-
-
-
     this.onValueChange = this.onValueChange.bind(this);
   }
 
@@ -108,69 +96,46 @@ export default class AnimationProperties extends React.Component {
     this.props.onChange(newData);
   }
 
-  pauseAnimation() {
-    // let newData = this.getProps();
-    // const timelineProperties = { playState: 'paused'};
-
-    // if (_.isObject(newData.timelineProperties)) {
-    //   newData.timelineProperties.playState = 'paused';
-    // } else {
-    //   newData.timelineProperties = timelineProperties;
-    // }
-
-    // console.log('pauseAnimation');
-    // this.props.onChange(newData);
-
-    this.updateTimelineProperties({ playState: 'paused'});
-  }
-
-  playAnimation() {
-    // let newData = this.getProps();
-    // const timelineProperties = { playState: 'running'};
-
-    // if (_.isObject(newData.timelineProperties)) {
-    //   newData.timelineProperties.playState = 'running';
-    // } else {
-    //   newData.timelineProperties = timelineProperties;
-    // }
-
-    // console.log('pauseAnimation');
-    // this.props.onChange(newData);
+  // pauseAnimation() {
+  //   this.props.updateTimelineProperties(
 
 
-    this.updateTimelineProperties({ playState: 'running'});
+  //     () => {this.updateTimelineProperties({ playState: 'paused'})}
+
+  //   };
+  // }
+
+  // playAnimation() {
+  //   this.props.updateTimelineProperties(() => {this.updateTimelineProperties({ playState: 'running'})}};
+  // }
+
+
+  /*
+   * {object} props
+   */
+  updateTimelineProperties(props) {
+    this.props.updateTimelineProperties(props, this.props);
   }
 
   /*
-   * {object} timelineProps
+   * @param {object} timelineProperties
+   * @returns {node}
    */
-  updateTimelineProperties(timelineProps) {
-    let currentData = this.getProps();
-    // const timelineProperties = { playState: 'running'};
-
-    let newData = currentData;
-    if (_.isObject(currentData.timelineProperties)) {
-      let mergedProps = _.merge({}, currentData.timelineProperties, timelineProps);
-      newData.timelineProperties = mergedProps;
-    } else {
-      newData.timelineProperties = timelineProps;
-    }
-
-    // console.log('updateTimelineProperties', newData);
-    this.props.onChange(newData);
-  }
-
   renderAnimationStateBtn(timelineProperties) {
     let element = null;
     if (timelineProperties && timelineProperties.playState && timelineProperties.playState === 'paused') {
-      element = <Button onClick={this.playAnimation}>Play</Button>;
+      element = <Button onClick={() => {this.updateTimelineProperties({ playState: 'running'})}}>Play</Button>;
     } else {
-      element = <Button onClick={this.pauseAnimation}>Pause</Button>;
+      element = <Button onClick={() => {this.updateTimelineProperties({ playState: 'paused'})}}>Pause</Button>;
     }
 
     return element;
   }
 
+  /*
+   * @param {object} timelineProperties
+   * @returns {node}
+   */
   renderVisibilityBtn(timelineProperties) {
     let element = null;
     if (timelineProperties && timelineProperties.visible === false) {
@@ -188,10 +153,8 @@ export default class AnimationProperties extends React.Component {
 
   render () {
     const { timelineProperties } = this.props;
+    console.log('AnimationProperties - render', this.props);
 
-
-
-    // console.log('AnimationProperties render', this.props);
     return (
       <div className="content-container animation-properties">
         <div>

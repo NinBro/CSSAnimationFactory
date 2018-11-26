@@ -24,6 +24,7 @@ export default class Sidebar extends React.Component {
   }
 
   render () {
+    const { updateTimelineProperties } = this.props;
     let data = this.props.data;
     let positionClass = this.props.position ? this.props.position + '-panel' : '';
     let stateClass = this.props.active ? 'active' : '';
@@ -39,11 +40,14 @@ export default class Sidebar extends React.Component {
       cursorBlinkRate: 0
     };
 
-    console.log('Sidebar - render', options, data);
+    // console.log('Sidebar - render', this.props);
 
     if (data && data.timeline) {
       content = (
-        <AnimationProperties {...data.timeline} onChange={this.handleChange} />
+        <AnimationProperties
+          {...data.timeline}
+          updateTimelineProperties={updateTimelineProperties}
+          onChange={this.handleChange} />
       );
     } else if (this.props.type === 'editor') {
       content = (

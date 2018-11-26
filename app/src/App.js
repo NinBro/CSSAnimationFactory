@@ -34,12 +34,16 @@ export default class App extends React.Component {
 constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
+    this.updateTimelineProperties = this.updateTimelineProperties.bind(this);
     this.onclickAddNewTimeline = this.onclickAddNewTimeline.bind(this);
     this.onClickTimelineTrack = this.onClickTimelineTrack.bind(this);
+    this.handleTimelineChange = this.handleTimelineChange.bind(this);
+
+
+
     this.onClickPreview = this.onClickPreview.bind(this);
-
-
     this.appEvent = this.appEvent.bind(this);
+
     this.state = {
       timelineCount: 0,
       showEditor: true,
@@ -179,9 +183,35 @@ constructor(props) {
     return this.getAppData().rawCSS;
   }
 
+  /*
+   * Updates the timelineProperties inside timeline (timeline.timelineProperties)
+   * {object} timelineProps
+   * {object} timeline
+   */
+  updateTimelineProperties(timelineProps, timeline) {
+    // console.log('updateTimelineProperties', timelineProps);
+    // let currentData = this.getProps();
+    let newData = {};
+    if (_.isObject(timeline.timelineProperties)) {
+      let mergedProps = _.merge({}, timeline.timelineProperties, timelineProps);
+      newData.timelineProperties = mergedProps;
+    } else {
+      newData.timelineProperties = timelineProps;
+    }
 
+    const mergedData = _.assign({}, timeline, newData);
+
+    // console.log('updateTimelineProperties', mergedData, timeline);
+    // this.handleChange(mergedData);
+   this.handleTimelineChange(mergedData);
+  }
+
+  /*
+   * Updates....
+   * @param {}
+   */
   handleChange(value) {
-    // If updating a timeline
+    // Updat single timeline
     if (value.timelineName) {
       this.updateTimeline(value);
     } else {
@@ -191,7 +221,12 @@ constructor(props) {
     }
   }
 
+  /*
+   * @param {object} timelineToUpdate
+   * @param {string} eventName
+   */
   updateTimeline(timelineToUpdate, eventName) {
+    console.log('updateTimeline', timelineToUpdate, eventName);
     if (timelineToUpdate.timelineName) {
       let timelines = this.state.timelines;
       let descendantId = null;
@@ -309,25 +344,55 @@ constructor(props) {
     // this.state.timelines.push('MORE') ;
   }
 
-  // Hide sidebar when preview is clicked
+ /*
+  * Hide sidebar when preview is clicked
+  */
   onClickPreview() {
     this.setState({
       rightSidebarData: {
         active: false
-      }
+      },
+      activeTimelineKeyPath: []
     });
   }
 
-  // Show sidebar when timeline clicked
-  // @param timeline {}
+  /*
+   * @param {object} timeline
+   */
   onClickTimelineTrack(timeline) {
+    this.handleTimelineChange(timeline);
+  }
+
+  /*
+   * @param {object} timeline
+   */
+  handleTimelineChange(timeline) {
+    console.log('handleTimelineChange', timeline);
+    const { timelines } = this.state;
+    const { keyPath } = timeline;
+    const newTimelines = _.cloneDeep(timelines);
+
+    if (timeline.keyPath) {
+      let timelineToUpdate;
+      if (timeline.keyPath.length > 1) {
+        newTimelines[timeline.keyPath[0]].descendants[timeline.keyPath[1]] = timeline;
+      } else {
+        newTimelines[timeline.keyPath[0]] = timeline;
+      }
+    }
+
+
+    // const mergedData = _.assign({}, timelineToUpdate, timeline);
+
     this.setState({
       rightSidebarData: {
         active: true,
         data: {
           timeline: timeline
         }
-      }
+      },
+      timelines: newTimelines,
+      activeTimelineKeyPath: keyPath
     });
   }
 
@@ -665,35 +730,44 @@ constructor(props) {
 
   /*
    * {array} timelines
+   * @returns {node}
    */
   renderEditor(timelines) {
-    let leftSidebarData = '';
-    // If timeline active show its css
-    if (this.state.rightSidebarData.data && this.state.rightSidebarData.data.timeline) {
-      leftSidebarData = this.renderAnimationCSS([this.state.rightSidebarData.data.timeline], 'preview');
-    // Otherwise show global css
-    } else {
-      leftSidebarData = this.renderAnimationCSS(timelines, 'preview');
-    }
-
-    let editorData = {
-      leftSidebarData: leftSidebarData,
-      rightSidebarData: {
-        onChange: this.handleChange,
-        type: this.state.rightSidebarData.type,
-        data: this.state.rightSidebarData.data,
-        active: this.state.rightSidebarData.active
-      },
-      timelineEditor: {
-        appEvent: this.appEvent,
-        onClickTimelineTrack: this.onClickTimelineTrack,
-        timelines: timelines,
-        masterTimeline: this.getMasterTimeline(timelines)
-      }
-    };
-
+    console.log('renderEditor', timelines);
+    const { activeTimelineKeyPath } = this.state;
     let editorNode;
     if (this.state.showEditor) {
+      let leftSidebarData = '';
+      // If timeline active show its css
+      if (this.state.rightSidebarData.data && this.state.rightSidebarData.data.timeline) {
+        leftSidebarData = this.renderAnimationCSS([this.state.rightSidebarData.data.timeline], 'preview');
+      // Otherwise show global css
+      } else {
+        leftSidebarData = this.renderAnimationCSS(timelines, 'preview');
+      }
+
+      let editorData = {
+        leftSidebarData: leftSidebarData,
+        rightSidebarData: {
+          onChange: this.handleChange,
+          updateTimelineProperties: this.updateTimelineProperties,
+          type: this.state.rightSidebarData.type,
+          data: this.state.rightSidebarData.data,
+          active: this.state.rightSidebarData.active
+        },
+        timelineEditor: {
+          activeTimelineKeyPath,
+          updateTimelineProperties: this.updateTimelineProperties,
+          appEvent: this.appEvent,
+          onClickTimelineTrack: this.onClickTimelineTrack,
+          timelines,
+          masterTimeline: this.getMasterTimeline(timelines)
+        }
+      };
+
+      // console.log('renderEditor', editorData);
+
+
       editorNode = <Editor editorData={editorData}/>;;
     } else {
       editorNode = null;
@@ -729,8 +803,9 @@ constructor(props) {
     let _this = this;
     let baseCSS = 'baseCSS';
     let animationCSS = 'animationCSS';
-    const timelines = this.state.timelines;
+    const { timelines } = this.state;
 
+    console.log('app - render', this.state);
     return (
       <div id="animationFactory" className="app">
         <Helmet>

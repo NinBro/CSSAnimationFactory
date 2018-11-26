@@ -7,6 +7,7 @@ export default class TimelineTrack extends React.Component {
   constructor(props) {
     super(props);
     this.onClick = this.onClick.bind(this);
+    this.updateTimelineProperties = this.updateTimelineProperties.bind(this);
     this.onMouseEnter = this.onMouseEnter.bind(this);
     this.onMouseLeave = this.onMouseLeave.bind(this);
   }
@@ -62,24 +63,79 @@ export default class TimelineTrack extends React.Component {
   // Show config menu....
   onClick() {
     // console.log('cliiiick', this.props);
+
+
+    // const mergedData = _.assign({}, this.props, {active: true});
+
+
     this.props.onClick(this.props);
   }
 
+  /*
+   * {object} e - event
+   * {object} props
+   */
+  updateTimelineProperties(e, props) {
+    e.stopPropagation();
+    this.props.updateTimelineProperties(props, this.props);
+  }
+
+  /*
+   * @param {object} timelineProperties
+   * @returns {node}
+   */
+  renderAnimationStateBtn(timelineProperties) {
+    let element = null;
+    if (timelineProperties && timelineProperties.playState && timelineProperties.playState === 'paused') {
+      element = <span onClick={(e) => {this.updateTimelineProperties(e, { playState: 'running'})}}>Play</span>;
+    } else {
+      element = <span onClick={(e) => {this.updateTimelineProperties(e, { playState: 'paused'})}}>Pause</span>;
+    }
+
+    return element;
+  }
+
+  /*
+   * @param {object} timelineProperties
+   * @returns {node}
+   */
+  renderVisibilityBtn(timelineProperties) {
+    let element = null;
+    if (timelineProperties && timelineProperties.visible === false) {
+      element = <span onClick={(e) => {this.updateTimelineProperties(e, {visible: true})}}>Show</span>;
+    } else {
+      element = <span onClick={(e) => {this.updateTimelineProperties(e, {visible: false})}}>Hide</span>;
+    }
+
+    return element;
+  }
 
   render () {
+    const { active, timelineProperties } = this.props;
+
+
     let extraClasses = '';
     if (this.props.type && this.props.type === 'secondary') {
       extraClasses = 'secondary';
     }
 
-    // console.log(this.props)
+    let activeClass = '';
+    if (active) {
+      activeClass = 'active';
+    }
+
+    console.log('TimelineTrack - render', this.props);
 
     return (
-      <div className={classNames('TimelineTrack timeline-track', extraClasses)} name={this.props.timelineName} onClick={this.onClick}>
-        <div className="timeline-meta">
+      <div
+        className={classNames('TimelineTrack timeline-track', extraClasses, activeClass)}
+        name={this.props.timelineName}
+        onClick={this.onClick}
+      >
+        <div className={classNames("timeline-meta", activeClass)}>
           <input type="text" className="name" value={this.props.timelineName} />
-          <span>Pause</span>
-          <span>Hide</span>
+          { this.renderAnimationStateBtn(timelineProperties) }
+          { this.renderVisibilityBtn(timelineProperties) }
         </div>
         <div className="timeline" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
           <div className="animation-key"/>
