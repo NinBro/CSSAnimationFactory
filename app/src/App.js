@@ -25,13 +25,21 @@ import DatePicker from './components/DatePicker';
 import TimelineEditor from './components/TimelineEditor/TimelineEditor';
 import Preview from './components/Preview/Preview.jsx';
 import Button from './components/Button.jsx';
+import { Select } from 'antd';
 import Editor from './components/Editor/Editor.jsx';
 
-// import { Button } from 'antd';
+// Samples
+import circleWheels from './animation-samples/circle-wheels';
+import monkey404 from './animation-samples/monkey-404';
+
+
 import './App.scss';
 
+
+const loadData = () => _.cloneDeep(circleWheels);
+
 export default class App extends React.Component {
-constructor(props) {
+  constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
     this.updateTimelineProperties = this.updateTimelineProperties.bind(this);
@@ -39,10 +47,7 @@ constructor(props) {
     this.onClickTimelineTrack = this.onClickTimelineTrack.bind(this);
     this.handleTimelineChange = this.handleTimelineChange.bind(this);
     this.updatePreviewKeyPath = this.updatePreviewKeyPath.bind(this);
-
-
-
-
+    this.handleSampleChange = this.handleSampleChange.bind(this);
 
 
     this.onClickPreview = this.onClickPreview.bind(this);
@@ -92,99 +97,38 @@ constructor(props) {
     });
   }
 
+  loadSample(sample) {
+    let data;
+    switch (sample) {
+      case 'circleWheels':
+        data = circleWheels;
+        break;
+      case 'monkey404':
+        data = monkey404;
+        break;
+    }
+
+    return _.cloneDeep(data);
+  }
+
   // Starting point for data
   getAppData() {
-
-    // og
-    let data = {
-      timelines : [
-        {
-          timelineName : 'circleOne',
-          classNames : 'logo',
-          descendants : [
-            {
-              timelineName : 'circleOne-child',
-              classNames : 'rings',
-              type : 'normal',
-              animationProperties : {
-                animationDirection : 'normal',
-                duration : '5s',
-                iteration : 'infinite',
-                timingFunction : 'ease'
-              },
-              keyframes : [
-                {
-                  position : 0,
-                  css : ' transform: rotate(0deg);'
-                },
-                {
-                  position : 100,
-                  css : ' transform: rotate(360deg);'
-                }
-              ]
-            },
-            {
-              timelineName : 'circleOne-child-two',
-              classNames : 'rings',
-              type : 'normal',
-              animationProperties : {
-                animationDirection : 'reverse',
-                duration : '4s',
-                iteration : 'infinite',
-                timingFunction : 'ease'
-              },
-              keyframes : [
-                {
-                  position : 0,
-                  css : ' transform: rotate(0deg);'
-                },
-                {
-                  position : 100,
-                  css : ' transform: rotate(360deg);'
-                }
-              ]
-            },
-            {
-              timelineName : 'circleOne-child-three',
-              classNames : 'rings',
-              type : 'normal',
-              animationProperties : {
-                animationDirection : 'normal',
-                // duration : '3s',
-                duration : '3s',
-                iteration : 'infinite',
-                timingFunction : 'ease'
-              },
-              keyframes : [
-                {
-                  position : 0,
-                  css : ' transform: rotate(0deg);'
-                },
-                {
-                  position : 100,
-                  css : ' transform: rotate(360deg);'
-                }
-              ]
-            }
-          ],
-          type : 'normal',
-          animationProperties : {
-            animationDirection : 'normal',
-            duration : '10s',
-            iteration : 'infinite',
-            timingFunction : 'linear'
-          }
-        }
-      ],
-      previewContentCSS : 'background: #DB5956;',
-      rawCSS : ".content * {  box-sizing: border-box;} .preview {  background: #DB5956;} .logo {  width: 230px;  height: 230px;  margin: 40px auto;  position: relative;}.rings {  border-radius: 50%;  border: 10px solid #fff;  position: absolute;  top: 0;  bottom: 0;  left: 0;  right: 0;  margin: auto;}.rings:before, .rings:after {  content: '';  position: absolute;  width: 25px;  height: 25px;  background: #fff;  border-radius: 50%;}.rings:before {  top: -18px;  left: 0;  right: 0;  margin: auto;}.rings:after {  bottom: -18px;  left: 0;  right: 0;  margin: auto;}.rings:first-of-type {  width: 230px;  height: 230px;}.rings:first-of-type:before {  box-shadow: 5px 0 0 #DB5956;}.rings:first-of-type:after {  box-shadow: -5px 0 0 #DB5956;}.rings:nth-of-type(2) {  width: 150px;  height: 150px;  transform: rotate(90deg);}.rings:nth-of-type(2):before {  box-shadow: -5px 0 0 #DB5956;}.rings:nth-of-type(2):after {  box-shadow: 5px 0 0 #DB5956;}.rings:nth-of-type(3) {  width: 70px;  height: 70px;  transform: rotate(45deg);}.rings:nth-of-type(3):before {  box-shadow: 5px 0 0 #DB5956;}.rings:nth-of-type(3):after {  box-shadow: -5px 0 0 #DB5956;}"
-    };
-
-    return data;
+    return this.loadSample('monkey404');
   }
 
   getRawCSS() {
     return this.getAppData().rawCSS;
+  }
+  /*
+   * @param {string} - sample
+   */
+  handleSampleChange(sample) {
+    const { timelines, previewContentCSS, rawCSS } = this.loadSample(sample);
+    this.setState({
+      timelines,
+      previewContentCSS,
+      rawCSS
+    });
   }
 
   /*
@@ -847,6 +791,10 @@ constructor(props) {
           {this.renderEditorBtn(showEditor)}
           <Button onClick={this.onclickAddNewTimeline.bind(this)}>Add Timeline</Button>
           <Button onClick={this.onClickEditBaseCSS.bind(this)}>Edit Base CSS</Button>
+          <Select defaultValue="monkey404" style={{ width: 120 }} onChange={this.handleSampleChange}>
+            <Option value="circleWheels">circleWheels</Option>
+            <Option value="monkey404">monkey404</Option>
+          </Select>
         </div>
         <Preview
           activeTimelineKeyPath={this.getPreviewKeyPath(activeTimelineKeyPath, activePreviewKeyPath)}
