@@ -8,8 +8,6 @@ export default class TimelineTrack extends React.Component {
     super(props);
     this.onClick = this.onClick.bind(this);
     this.updateTimelineProperties = this.updateTimelineProperties.bind(this);
-    this.onMouseEnter = this.onMouseEnter.bind(this);
-    this.onMouseLeave = this.onMouseLeave.bind(this);
   }
 
   Notch(props) {
@@ -50,24 +48,8 @@ export default class TimelineTrack extends React.Component {
     return notches;
   }
 
-  onMouseEnter() {
-    // console.log('ITS ENTER')
-    this.props.onMouseEnter(this.props);
-  }
-
-  onMouseLeave() {
-    // console.log('ITS LEAVE');
-    this.props.onMouseLeave(this.props);
-  }
-
   // Show config menu....
   onClick() {
-    // console.log('cliiiick', this.props);
-
-
-    // const mergedData = _.assign({}, this.props, {active: true});
-
-
     this.props.onClick(this.props);
   }
 
@@ -111,7 +93,7 @@ export default class TimelineTrack extends React.Component {
   }
 
   render () {
-    const { active, timelineProperties } = this.props;
+    const { active, timelineProperties, keyPath, updatePreviewKeyPath } = this.props;
 
 
     let extraClasses = '';
@@ -137,7 +119,11 @@ export default class TimelineTrack extends React.Component {
           { this.renderAnimationStateBtn(timelineProperties) }
           { this.renderVisibilityBtn(timelineProperties) }
         </div>
-        <div className="timeline" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
+        <div
+          className="timeline"
+          onMouseEnter={() => {updatePreviewKeyPath(keyPath)}}
+          onMouseLeave={() => {updatePreviewKeyPath([])}}
+        >
           <div className="animation-key"/>
           <div className="notches">
             {this.getNotches()}

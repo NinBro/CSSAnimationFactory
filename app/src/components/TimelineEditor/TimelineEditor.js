@@ -6,25 +6,6 @@ export default class TimelineEditor extends React.Component {
   constructor(props) {
     super(props);
     this.onClick = this.onClick.bind(this);
-    this.onMouseEnter = this.onMouseEnter.bind(this);
-    this.onMouseLeave = this.onMouseLeave.bind(this);
-  }
-
-  onMouseEnter(props) {
-    // Create a temp instance of props
-    let newProps = _.mapValues(props, function(value) {
-      return value;
-    });
-
-    this.props.appEvent('onMouseEnter', newProps);
-  }
-
-  onMouseLeave(props) {
-    let newProps = _.mapValues(props, function(value) {
-      return value;
-    });
-
-    this.props.appEvent('onMouseLeave', newProps);
   }
 
   onClick(data, keyPath) {
@@ -39,9 +20,13 @@ export default class TimelineEditor extends React.Component {
     let newTimelines = [];
 
     _.each(timelines, (timeline, i) => {
+      const newTimeline = {
+        ...timeline,
+        keyPath: [i]
+      };
 
-      timeline.keyPath = [i];
-      newTimelines.push(timeline);
+      // timeline.keyPath = [i];
+      newTimelines.push(newTimeline);
 
       // Flatten....
       if (timeline.descendants && timeline.descendants.length) {
@@ -61,29 +46,9 @@ export default class TimelineEditor extends React.Component {
     return newTimelines;
   }
 
-  /*
-   * @param {array} activeKeyPAth
-   * @returns {boolean}
-   */
-  isActive(activeKeyPath, timeline) {
-    // _.filter(activeKeyPath, (key, i) => { return key });
-
-
-    let isActive;
-    if (_.isArray(activeKeyPath) && timeline && _.isArray(timeline.keyPath)) {
-      isActive = activeKeyPath.join('') === timeline.keyPath.join('');
-    } else {
-      isActive = false;
-    }
-
-    console.log('isActive', isActive, activeKeyPath, timeline);
-    return isActive;
-
-  }
-
   render () {
     console.log('TimelineEditor - render', this.props);
-    const { activeTimelineKeyPath, handleChange, updateTimelineProperties, timelines } = this.props;
+    const { activeTimelineKeyPath, isTimelineActive, handleChange, updateTimelineProperties, updatePreviewKeyPath, timelines } = this.props;
     const timelinesFlattened = this.getTimelinesFlattened(timelines);
     const timelinesHTML = timelinesFlattened.map((timeline, i) => {
     const { keyPath } = timeline;
@@ -91,12 +56,11 @@ export default class TimelineEditor extends React.Component {
       return (
         <TimelineTrack
           {...timeline}
-          active={this.isActive(activeTimelineKeyPath, timeline)}
+          active={isTimelineActive(activeTimelineKeyPath, timeline)}
           key={i}
           handleChange={handleChange}
           updateTimelineProperties={updateTimelineProperties}
-          onMouseEnter={this.onMouseEnter}
-          onMouseLeave={this.onMouseLeave}
+          updatePreviewKeyPath={updatePreviewKeyPath}
           onClick={(data) => {this.onClick(data, keyPath)}}
         />
         )

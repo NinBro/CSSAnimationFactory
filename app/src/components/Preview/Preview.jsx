@@ -1,38 +1,37 @@
 import React from 'react';
+import _ from 'lodash';
 import classNames from 'classnames';
-import TimelinePreview from './TimelinePreview.jsx';
+import PreviewContent from './PreviewContent.jsx';
 import './Preview.scss';
 
 export default class Preview extends React.Component {
-  constructor(props) {
-    super(props);
-  }
 
   render () {
-    let active = '';
-    if (this.props.active) {
-      active = 'active';
-    }
-
-    // renderDescendants
-    let renderDescendants = '';
-    if (this.props.descendants && this.props.descendants.length) {
-      const descendants = this.props.descendants;
-      // console.log(descendants);
-      renderDescendants = descendants.map((descendant) => {
-        // console.log(descendant);
-        const { timelineName, classNames, active, ...props} = descendant;
-        return <TimelinePreview name={timelineName} className={classNames} active={active} {...props} />
-      }
-      );
-    }
-
+    const { activeTimelineKeyPath, isTimelineActive, showEditor, timelines, onClickPreview, updatePreviewKeyPath, handleTimelineChange } = this.props;
     // console.log('Preview - render', this.props);
+    let full = '';
+    if (!showEditor) {
+      full = 'full';
+    }
+    // const timelines = this.state.timelines;
+    const renderTimelines = timelines.map((timeline, i) => {
+      return (
+        <PreviewContent
+          {...timeline}
+          keyPath={[i]}
+          activeTimelineKeyPath={activeTimelineKeyPath}
+          isTimelineActive={isTimelineActive}
+          updatePreviewKeyPath={updatePreviewKeyPath}
+          handleTimelineChange={handleTimelineChange}
+        />
+      );
+    });
 
     return (
-      <div name={this.props.timelineName} className={classNames(this.props.classNames, active)}>
-        {renderDescendants}
+      <div className={classNames('Preview preview', full)} onClick={onClickPreview} >
+        {renderTimelines}
       </div>
     );
   }
+
 }

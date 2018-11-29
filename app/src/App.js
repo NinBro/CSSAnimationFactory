@@ -38,6 +38,10 @@ constructor(props) {
     this.onclickAddNewTimeline = this.onclickAddNewTimeline.bind(this);
     this.onClickTimelineTrack = this.onClickTimelineTrack.bind(this);
     this.handleTimelineChange = this.handleTimelineChange.bind(this);
+    this.updatePreviewKeyPath = this.updatePreviewKeyPath.bind(this);
+
+
+
 
 
 
@@ -348,6 +352,7 @@ constructor(props) {
   * Hide sidebar when preview is clicked
   */
   onClickPreview() {
+    console.log('onClickPreview');
     this.setState({
       rightSidebarData: {
         active: false
@@ -381,9 +386,6 @@ constructor(props) {
       }
     }
 
-
-    // const mergedData = _.assign({}, timelineToUpdate, timeline);
-
     this.setState({
       rightSidebarData: {
         active: true,
@@ -408,22 +410,20 @@ constructor(props) {
     });
   }
 
-  // Renders Preview Pane
-  renderPreviewContent() {
-    let full = '';
-    if (!this.state.showEditor) {
-      full = 'full';
+  /*
+   * @param {array} activeKeyPath
+   * @returns {boolean}
+   */
+  isTimelineActive(activeKeyPath, timeline) {
+    let isActive;
+    if (_.isArray(activeKeyPath) && timeline && _.isArray(timeline.keyPath)) {
+      isActive = activeKeyPath.join('') === timeline.keyPath.join('');
+    } else {
+      isActive = false;
     }
-    const timelines = this.state.timelines;
-    const renderTimelines = timelines.map((timeline) =>
-      <Preview {...timeline} />
-    );
 
-    return (
-      <div className={classNames('Preview preview', full)} onClick={this.onClickPreview} >
-        {renderTimelines}
-      </div>
-    );
+    // console.log('isActive', isActive, activeKeyPath, timeline);
+    return isActive;
   }
 
   // @param timeslines {array}
@@ -577,7 +577,7 @@ constructor(props) {
    * @returns {string} CSS
    */
   getAnimationProperties(timeline, type) {
-    console.log('getAnimationProperties', timeline, type);
+    // console.log('getAnimationProperties', timeline, type);
     const { animationProperties, timelineProperties } = timeline;
 
 
@@ -757,7 +757,9 @@ constructor(props) {
         },
         timelineEditor: {
           activeTimelineKeyPath,
+          isTimelineActive: this.isTimelineActive,
           updateTimelineProperties: this.updateTimelineProperties,
+          updatePreviewKeyPath: this.updatePreviewKeyPath,
           appEvent: this.appEvent,
           onClickTimelineTrack: this.onClickTimelineTrack,
           timelines,
@@ -799,11 +801,38 @@ constructor(props) {
     return element;
   }
 
+  /*
+   * @param {array} activeTimelineKeyPath
+   * @param {array} activePreviewKeyPath
+   * @returns {array}
+   */
+  getPreviewKeyPath(activeTimelineKeyPath, activePreviewKeyPath) {
+    let keyPath;
+    if (!_.isEmpty(activePreviewKeyPath)) {
+      keyPath = activePreviewKeyPath;
+    } else {
+      keyPath = activeTimelineKeyPath;
+    }
+
+    console.log('getPreviewKeyPath', keyPath);
+    return keyPath;
+  }
+
+  /*
+   * @param {array} keyPath
+   */
+  updatePreviewKeyPath(keyPath) {
+    // console.log('updatePreviewKeyPath', keyPath);
+    this.setState({
+      activePreviewKeyPath: keyPath
+    });
+  }
+
   render() {
     let _this = this;
     let baseCSS = 'baseCSS';
     let animationCSS = 'animationCSS';
-    const { timelines } = this.state;
+    const { activeTimelineKeyPath, activePreviewKeyPath, timelines, showEditor } = this.state;
 
     console.log('app - render', this.state);
     return (
@@ -815,11 +844,19 @@ constructor(props) {
           <style type="text/css" id={animationCSS}>{this.compileAnimationCSS(timelines, this.getMasterTimeline(timelines))}</style>
         </Helmet>
         <div className="navigation">
-          {this.renderEditorBtn(this.state.showEditor)}
+          {this.renderEditorBtn(showEditor)}
           <Button onClick={this.onclickAddNewTimeline.bind(this)}>Add Timeline</Button>
           <Button onClick={this.onClickEditBaseCSS.bind(this)}>Edit Base CSS</Button>
         </div>
-        {this.renderPreviewContent()}
+        <Preview
+          activeTimelineKeyPath={this.getPreviewKeyPath(activeTimelineKeyPath, activePreviewKeyPath)}
+          isTimelineActive={this.isTimelineActive}
+          onClickPreview={this.onClickPreview}
+          handleTimelineChange={this.handleTimelineChange}
+          updatePreviewKeyPath={this.updatePreviewKeyPath}
+          showEditor={showEditor}
+          timelines={timelines}
+        />
         {this.renderEditor(timelines)}
       </div>
     );
