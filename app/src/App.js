@@ -35,9 +35,6 @@ import monkey404 from './animation-samples/monkey-404';
 
 import './App.scss';
 
-
-const loadData = () => _.cloneDeep(circleWheels);
-
 export default class App extends React.Component {
   constructor(props) {
     super(props);
@@ -113,7 +110,7 @@ export default class App extends React.Component {
 
   // Starting point for data
   getAppData() {
-    return this.loadSample('monkey404');
+    return this.loadSample('circleWheels');
   }
 
   getRawCSS() {
@@ -791,7 +788,7 @@ export default class App extends React.Component {
           {this.renderEditorBtn(showEditor)}
           <Button onClick={this.onclickAddNewTimeline.bind(this)}>Add Timeline</Button>
           <Button onClick={this.onClickEditBaseCSS.bind(this)}>Edit Base CSS</Button>
-          <Select defaultValue="monkey404" style={{ width: 120 }} onChange={this.handleSampleChange}>
+          <Select defaultValue="circleWheels" style={{ width: 120 }} onChange={this.handleSampleChange}>
             <Option value="circleWheels">circleWheels</Option>
             <Option value="monkey404">monkey404</Option>
           </Select>
