@@ -3,20 +3,118 @@ export default {
     {
       name: 'circleOne',
       type: 'div',
+      className: 'logo',
       elements: [
         {
           name: 'circleOne-child',
-          type: 'div'
+          type: 'div',
+          className : 'rings'
         },
         {
           name: 'circleOne-child-two',
-          type: 'div'
+          type: 'div',
+          className : 'rings',
+          elements: [
+            {
+              name: 'bro',
+              type: 'div',
+              elements: [
+                {
+                  name: 'bro-child',
+                  type: 'div'
+                },
+                {
+                  name: 'bro-child',
+                  type: 'div'
+                }
+              ]
+            }
+          ]
         },
         {
           name: 'circleOne-child-three',
-          type: 'div'
+          type: 'div',
+          className : 'rings'
         }
       ]
+    }
+  ],
+  animations : [
+    {
+      name : 'circleOne',
+      classNames : 'logo',
+      animations : [
+        {
+          name : 'circleOne-child',
+          classNames : 'rings',
+          type : 'normal',
+          animationProperties : {
+            animationDirection : 'normal',
+            duration : '5s',
+            iteration : 'infinite',
+            timingFunction : 'ease'
+          },
+          keyframes : [
+            {
+              position : 0,
+              css : ' transform: rotate(0deg);'
+            },
+            {
+              position : 100,
+              css : ' transform: rotate(360deg);'
+            }
+          ]
+        },
+        {
+          name : 'circleOne-child-two',
+          classNames : 'rings',
+          type : 'normal',
+          animationProperties : {
+            animationDirection : 'reverse',
+            duration : '4s',
+            iteration : 'infinite',
+            timingFunction : 'ease'
+          },
+          keyframes : [
+            {
+              position : 0,
+              css : ' transform: rotate(0deg);'
+            },
+            {
+              position : 100,
+              css : ' transform: rotate(360deg);'
+            }
+          ]
+        },
+        {
+          name : 'circleOne-child-three',
+          classNames : 'rings',
+          type : 'normal',
+          animationProperties : {
+            animationDirection : 'normal',
+            duration : '3s',
+            iteration : 'infinite',
+            timingFunction : 'ease'
+          },
+          keyframes : [
+            {
+              position : 0,
+              css : ' transform: rotate(0deg);'
+            },
+            {
+              position : 100,
+              css : ' transform: rotate(360deg);'
+            }
+          ]
+        }
+      ],
+      type : 'normal',
+      animationProperties : {
+        animationDirection : 'normal',
+        duration : '10s',
+        iteration : 'infinite',
+        timingFunction : 'linear'
+      }
     }
   ],
   timelines : [

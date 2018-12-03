@@ -45,10 +45,13 @@ export default class App extends React.Component {
     this.handleTimelineChange = this.handleTimelineChange.bind(this);
     this.updatePreviewKeyPath = this.updatePreviewKeyPath.bind(this);
     this.handleSampleChange = this.handleSampleChange.bind(this);
-
-
+    this.renderAnimationCSS = this.renderAnimationCSS.bind(this);
     this.onClickPreview = this.onClickPreview.bind(this);
     this.appEvent = this.appEvent.bind(this);
+    this.getMasterTimeline = this.getMasterTimeline.bind(this);
+
+
+
 
     this.state = {
       timelineCount: 0,
@@ -68,11 +71,13 @@ export default class App extends React.Component {
   }
 
   componentWillMount() {
+    const appData = this.getAppData();
+    const { animations, elements } = appData;
 
     // Set ID for each timeline for tracking
     let i = this.state.timelineCount;
     let formattedTimelines = [];
-    _.each(this.getAppData().timelines, function(timeline) {
+    _.each(appData.timelines, function(timeline) {
       timeline.id = i;
       i++;
 
@@ -88,9 +93,11 @@ export default class App extends React.Component {
 
     this.setState({
       baseCSS: this.getRawCSS(),
-      appData: this.getAppData(),
+      appData,
       timelines: formattedTimelines,
-      timelineCount: i
+      timelineCount: i,
+      animations,
+      elements
     });
   }
 
@@ -405,7 +412,7 @@ export default class App extends React.Component {
    * @returns {string} CSS
    */
   renderAnimationCSS(timelines, type) {
-    console.log('renderAnimationCSS', timelines, type);
+    // console.log('renderAnimationCSS', timelines, type);
     const _this = this;
     const lineBreak = '\n';
     const indent = '  ';
@@ -670,56 +677,6 @@ export default class App extends React.Component {
   }
 
   /*
-   * {array} timelines
-   * @returns {node}
-   */
-  renderEditor(timelines) {
-    console.log('renderEditor', timelines);
-    const { activeTimelineKeyPath } = this.state;
-    let editorNode;
-    if (this.state.showEditor) {
-      let leftSidebarData = '';
-      // If timeline active show its css
-      if (this.state.rightSidebarData.data && this.state.rightSidebarData.data.timeline) {
-        leftSidebarData = this.renderAnimationCSS([this.state.rightSidebarData.data.timeline], 'preview');
-      // Otherwise show global css
-      } else {
-        leftSidebarData = this.renderAnimationCSS(timelines, 'preview');
-      }
-
-      let editorData = {
-        leftSidebarData: leftSidebarData,
-        rightSidebarData: {
-          onChange: this.handleChange,
-          updateTimelineProperties: this.updateTimelineProperties,
-          type: this.state.rightSidebarData.type,
-          data: this.state.rightSidebarData.data,
-          active: this.state.rightSidebarData.active
-        },
-        timelineEditor: {
-          activeTimelineKeyPath,
-          isTimelineActive: this.isTimelineActive,
-          updateTimelineProperties: this.updateTimelineProperties,
-          updatePreviewKeyPath: this.updatePreviewKeyPath,
-          appEvent: this.appEvent,
-          onClickTimelineTrack: this.onClickTimelineTrack,
-          timelines,
-          masterTimeline: this.getMasterTimeline(timelines)
-        }
-      };
-
-      // console.log('renderEditor', editorData);
-
-
-      editorNode = <Editor editorData={editorData}/>;;
-    } else {
-      editorNode = null;
-    }
-
-    return editorNode;
-  }
-
-  /*
    * @param {boolean} showEditor
    * @returns {node}
    */
@@ -773,7 +730,7 @@ export default class App extends React.Component {
     let _this = this;
     let baseCSS = 'baseCSS';
     let animationCSS = 'animationCSS';
-    const { activeTimelineKeyPath, activePreviewKeyPath, timelines, showEditor } = this.state;
+    const { animations, elements, activeTimelineKeyPath, activePreviewKeyPath, timelines, showEditor, rightSidebarData } = this.state;
 
     console.log('app - render', this.state);
     return (
@@ -794,6 +751,7 @@ export default class App extends React.Component {
           </Select>
         </div>
         <Preview
+          elements={elements}
           activeTimelineKeyPath={this.getPreviewKeyPath(activeTimelineKeyPath, activePreviewKeyPath)}
           isTimelineActive={this.isTimelineActive}
           onClickPreview={this.onClickPreview}
@@ -802,7 +760,22 @@ export default class App extends React.Component {
           showEditor={showEditor}
           timelines={timelines}
         />
-        {this.renderEditor(timelines)}
+        <Editor
+          timelines={timelines}
+          activeTimelineKeyPath={activeTimelineKeyPath}
+          isTimelineActive={this.isTimelineActive}
+          animations={animations}
+          elements={elements}
+          showEditor={showEditor}
+          rightSidebarData={rightSidebarData}
+          renderAnimationCSS={this.renderAnimationCSS}
+          handleChange={this.handleChange}
+          updateTimelineProperties={this.updateTimelineProperties}
+          updatePreviewKeyPath={this.updatePreviewKeyPath}
+          appEvent={this.appEvent}
+          onClickTimelineTrack={this.onClickTimelineTrack}
+          getMasterTimeline={this.getMasterTimeline}
+          />
       </div>
     );
   }

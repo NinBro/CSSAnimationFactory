@@ -3,6 +3,9 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import AnimationProperties from './AnimationProperties';
+import Animations from './Animations';
+import Elements from './Elements';
+import ElementProperties from './ElementProperties';
 import CSSEditor from './../CSSEditor';
 import KeyframeEditor from './../KeyframeEditor';
 import './Sidebar.scss';
@@ -24,7 +27,9 @@ export default class Sidebar extends React.Component {
   }
 
   render () {
-    const { updateTimelineProperties } = this.props;
+    const { updateTimelineProperties, view, animations, elements, activeElementKeyPath } = this.props;
+
+    console.log('Sidebar - render', this.props);
     let data = this.props.data;
     let positionClass = this.props.position ? this.props.position + '-panel' : '';
     let stateClass = this.props.active ? 'active' : '';
@@ -40,7 +45,7 @@ export default class Sidebar extends React.Component {
       cursorBlinkRate: 0
     };
 
-    // console.log('Sidebar - render', this.props);
+    console.log('Sidebar - render', this.props);
 
     if (data && data.timeline) {
       content = (
@@ -69,9 +74,30 @@ export default class Sidebar extends React.Component {
       )
     }
 
+
+    switch (view) {
+      case 'elements':
+        content = (
+          <div>
+            Elements
+            <Elements
+              activeKeyPath={activeElementKeyPath}
+              elements={elements} />
+            Animations
+            <Animations
+              activeElementKeyPath={activeElementKeyPath}
+              animations={animations} />
+          </div>
+          );
+        break;
+      case 'elementProperties':
+        content = <ElementProperties elements={elements} activeElementKeyPath={activeElementKeyPath} />;
+        break;
+    };
+
     return (
-      <div className={classNames('Sidebar sidebar', positionClass, stateClass)}>
-        {content}
+      <div className={classNames('Sidebar sidebar', positionClass, stateClass, view)}>
+        { content }
       </div>
     );
   }

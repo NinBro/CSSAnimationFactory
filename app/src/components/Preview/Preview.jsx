@@ -2,12 +2,27 @@ import React from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
 import PreviewContent from './PreviewContent.jsx';
+import Element from './Element.jsx';
 import './Preview.scss';
 
 export default class Preview extends React.Component {
 
+  /*
+   * @param {array} elements
+   */
+  renderElements(elements) {
+    return elements.map((element, i) => {
+      return (
+        <Element
+          key={i}
+          {...element}
+        />
+      );
+    });
+  }
+
   render () {
-    const { activeTimelineKeyPath, isTimelineActive, showEditor, timelines, onClickPreview, updatePreviewKeyPath, handleTimelineChange } = this.props;
+    const { activeTimelineKeyPath, isTimelineActive, showEditor, elements, timelines, onClickPreview, updatePreviewKeyPath, handleTimelineChange } = this.props;
     // console.log('Preview - render', this.props);
     let full = '';
     if (!showEditor) {
@@ -29,7 +44,7 @@ export default class Preview extends React.Component {
 
     return (
       <div className={classNames('Preview preview', full)} onClick={onClickPreview} >
-        {renderTimelines}
+        {this.renderElements(elements)}
       </div>
     );
   }
