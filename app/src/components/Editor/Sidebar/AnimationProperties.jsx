@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import KeyframeEditor from './../KeyframeEditor';
+import KeyframeEditor from '../../KeyframeEditor';
 import { Button } from 'antd';
 import { Input } from 'antd';
 

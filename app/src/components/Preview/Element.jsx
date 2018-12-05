@@ -1,41 +1,48 @@
 import React from 'react';
 import _ from 'lodash';
+import { Tooltip } from 'antd';
 
 export default class Element extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleOnClick = this.handleOnClick.bind(this);
+    this.handleOnHover = this.handleOnHover.bind(this);
+  }
 
   /*
-   * @param {array} elements
-   * @returns {node}
+   * @param {object} e - event
+   * @param {function} action
+   * @param {array} keyPath
    */
-  renderElements(elements) {
-    let nodes;
-    // console.log('renderElements', elements);
-    if (_.isObject(elements)) {
-      nodes = elements.map((element, i) => {
-        const { elements } = element;
-        return (
-          <div
-            key={i}
-            {...element}
-          >
-            {this.renderElements(elements)}
-          </div>
-        );
-      });
-    } else {
-      nodes = null;
-    }
+  handleOnClick(e, action, keyPath) {
+    e.stopPropagation();
+    action(keyPath);
+  }
 
-    return nodes;
-
+  /*
+   * @param {object} e - event
+   * @param {function} action
+   * @param {array} value
+   */
+  handleOnHover(e, action, value) {
+    // e.stopPropagation();
+    action(value);
   }
 
   render () {
-    const { name, elements } = this.props;
+    const { children, name, keyPath, updatePreviewKeyPath, handleTimelineChange, onClickElement, ...props } = this.props;
     return (
-      <div name={name} >
-        { this.renderElements(elements) }
-      </div>
+      <Tooltip title={name}>
+        <div
+          { ...props }
+          name={ name }
+          onClick={(e) => {this.handleOnClick(e, onClickElement, keyPath)}}
+          onMouseEnter={(e) => {this.handleOnHover(e, updatePreviewKeyPath, keyPath)}}
+          onMouseLeave={(e) => {this.handleOnHover(e, updatePreviewKeyPath, [])}}
+        >
+          { children }
+        </div>
+      </Tooltip>
     );
   }
 }

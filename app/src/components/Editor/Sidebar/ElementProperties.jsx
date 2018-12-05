@@ -10,7 +10,7 @@ export default class ElementProperties extends React.Component {
    */
   getElementProperties(activeElementKeyPath, elements) {
     console.log('getElementProperties', activeElementKeyPath, elements);
-    const target = elements[activeElementKeyPath[0]];
+    const target = activeElementKeyPath && elements[activeElementKeyPath[0]];
     let results;
     if (target) {
       if (target.elements) {
@@ -20,7 +20,7 @@ export default class ElementProperties extends React.Component {
         results = target;
       }
     } else {
-      results = null;
+      results = {};
     }
 
     return results;
@@ -28,8 +28,10 @@ export default class ElementProperties extends React.Component {
 
   render () {
     const { activeElementKeyPath, elements } = this.props;
+    const elementProperties = this.getElementProperties(activeElementKeyPath, elements);
     console.log('ElementProperties - render', this.props);
-    const { name } = this.getElementProperties(activeElementKeyPath, elements);
+
+    const { name } = elementProperties;
 
     return (
       <div>

@@ -1,17 +1,15 @@
 import React from 'react';
-import Sidebar from './../Sidebar/Sidebar.jsx';
+import Sidebar from './Sidebar/Sidebar.jsx';
 import TimelineEditor from './../TimelineEditor/TimelineEditor';
 import './Editor.scss';
 
 export default class Editor extends React.Component {
   render () {
-    const { activeTimelineKeyPath, appEvent, animations, elements, showEditor, rightSidebarData,
+    const { activeElementKeyPath, activeTimelineKeyPath, appEvent, animations, elements, showEditor, rightSidebarData,
       getMasterTimeline, renderAnimationCSS, handleChange, updateTimelineProperties,
       isTimelineActive, updatePreviewKeyPath, onClickTimelineTrack, timelines } = this.props;
 
     console.log('Editor - render', this.props);
-
-    let activeElementKeyPath = [0, 0];
 
     let editorNode;
     if (showEditor) {

@@ -6,14 +6,14 @@ import AnimationProperties from './AnimationProperties';
 import Animations from './Animations';
 import Elements from './Elements';
 import ElementProperties from './ElementProperties';
-import CSSEditor from './../CSSEditor';
-import KeyframeEditor from './../KeyframeEditor';
+import CSSEditor from '../../CSSEditor';
+import KeyframeEditor from '../../KeyframeEditor';
 import './Sidebar.scss';
 import { Button } from 'antd';
 import CodeMirror from 'react-codemirror';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/css/css';
-import './../CodeMirrorOverride.scss';
+import '../../CodeMirrorOverride.scss';
 
 export default class Sidebar extends React.Component {
   constructor(props) {

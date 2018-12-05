@@ -19,7 +19,6 @@
 import React from 'react';
 import _ from 'lodash';
 import {Helmet} from "react-helmet";
-import Sidebar from './components/Sidebar/Sidebar.jsx';
 import classNames from 'classnames';
 import DatePicker from './components/DatePicker';
 import TimelineEditor from './components/TimelineEditor/TimelineEditor';
@@ -47,6 +46,7 @@ export default class App extends React.Component {
     this.handleSampleChange = this.handleSampleChange.bind(this);
     this.renderAnimationCSS = this.renderAnimationCSS.bind(this);
     this.onClickPreview = this.onClickPreview.bind(this);
+    this.onClickElement = this.onClickElement.bind(this);
     this.appEvent = this.appEvent.bind(this);
     this.getMasterTimeline = this.getMasterTimeline.bind(this);
 
@@ -305,7 +305,22 @@ export default class App extends React.Component {
       rightSidebarData: {
         active: false
       },
-      activeTimelineKeyPath: []
+      activeTimelineKeyPath: [],
+      activeElementKeyPath: []
+    });
+  }
+
+ /*
+  * ...
+  */
+  onClickElement(keyPath) {
+    console.log('onClickPreview');
+    this.setState({
+      rightSidebarData: {
+        active: true
+      },
+      activeTimelineKeyPath: [],
+      activeElementKeyPath: keyPath
     });
   }
 
@@ -712,7 +727,7 @@ export default class App extends React.Component {
       keyPath = activeTimelineKeyPath;
     }
 
-    console.log('getPreviewKeyPath', keyPath);
+    // console.log('getPreviewKeyPath', keyPath);
     return keyPath;
   }
 
@@ -730,7 +745,9 @@ export default class App extends React.Component {
     let _this = this;
     let baseCSS = 'baseCSS';
     let animationCSS = 'animationCSS';
-    const { animations, elements, activeTimelineKeyPath, activePreviewKeyPath, timelines, showEditor, rightSidebarData } = this.state;
+    const { animations, elements, activeElementKeyPath, activeTimelineKeyPath, activePreviewKeyPath, timelines, showEditor, rightSidebarData } = this.state;
+
+    // let activeElementKeyPath = [0, 0];
 
     console.log('app - render', this.state);
     return (
@@ -752,9 +769,11 @@ export default class App extends React.Component {
         </div>
         <Preview
           elements={elements}
-          activeTimelineKeyPath={this.getPreviewKeyPath(activeTimelineKeyPath, activePreviewKeyPath)}
+          activeKeyPath={this.getPreviewKeyPath(activeElementKeyPath, activePreviewKeyPath)}
+          activeTimelineKeyPath={this.getPreviewKeyPath(activeElementKeyPath, activePreviewKeyPath)}
           isTimelineActive={this.isTimelineActive}
           onClickPreview={this.onClickPreview}
+          onClickElement={this.onClickElement}
           handleTimelineChange={this.handleTimelineChange}
           updatePreviewKeyPath={this.updatePreviewKeyPath}
           showEditor={showEditor}
@@ -762,6 +781,7 @@ export default class App extends React.Component {
         />
         <Editor
           timelines={timelines}
+          activeElementKeyPath={activeElementKeyPath}
           activeTimelineKeyPath={activeTimelineKeyPath}
           isTimelineActive={this.isTimelineActive}
           animations={animations}
