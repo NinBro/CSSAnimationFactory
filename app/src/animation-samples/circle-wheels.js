@@ -1,17 +1,18 @@
 export default {
   elements: [
     {
-      name: 'circleOne',
+      name: 'ring-wrapper',
       type: 'div',
       className: 'logo',
       elements: [
         {
-          name: 'circleOne-child',
+          name: 'ring-one',
+          linkedAnimationName: 'ring-one-spin',
           type: 'div',
           className : 'rings'
         },
         {
-          name: 'circleOne-child-two',
+          name: 'ring-two',
           type: 'div',
           className : 'rings',
           elements: [
@@ -32,7 +33,7 @@ export default {
           ]
         },
         {
-          name: 'circleOne-child-three',
+          name: 'ring-three',
           type: 'div',
           className : 'rings'
         }
@@ -45,7 +46,7 @@ export default {
       classNames : 'logo',
       animations : [
         {
-          name : 'circleOne-child',
+          name : 'ring-one-spin',
           classNames : 'rings',
           type : 'normal',
           animationProperties : {
@@ -66,7 +67,7 @@ export default {
           ]
         },
         {
-          name : 'circleOne-child-two',
+          name : 'ring-two-spin',
           classNames : 'rings',
           type : 'normal',
           animationProperties : {
@@ -87,7 +88,7 @@ export default {
           ]
         },
         {
-          name : 'circleOne-child-three',
+          name : 'ring-three-spin',
           classNames : 'rings',
           type : 'normal',
           animationProperties : {

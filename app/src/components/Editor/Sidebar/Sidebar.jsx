@@ -27,7 +27,7 @@ export default class Sidebar extends React.Component {
   }
 
   render () {
-    const { updateTimelineProperties, view, animations, elements, activeElementKeyPath } = this.props;
+    const { updateTimelineProperties, view, animations, elements, activeElementKeyPath, getElementProperties, handleElementChange } = this.props;
 
     console.log('Sidebar - render', this.props);
     let data = this.props.data;
@@ -91,7 +91,7 @@ export default class Sidebar extends React.Component {
           );
         break;
       case 'elementProperties':
-        content = <ElementProperties elements={elements} activeElementKeyPath={activeElementKeyPath} />;
+        content = <ElementProperties handleElementChange={handleElementChange} getElementProperties={getElementProperties} animations={animations} elements={elements} activeElementKeyPath={activeElementKeyPath} />;
         break;
     };
 

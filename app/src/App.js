@@ -42,6 +42,9 @@ export default class App extends React.Component {
     this.onclickAddNewTimeline = this.onclickAddNewTimeline.bind(this);
     this.onClickTimelineTrack = this.onClickTimelineTrack.bind(this);
     this.handleTimelineChange = this.handleTimelineChange.bind(this);
+    this.handleElementChange = this.handleElementChange.bind(this);
+
+
     this.updatePreviewKeyPath = this.updatePreviewKeyPath.bind(this);
     this.handleSampleChange = this.handleSampleChange.bind(this);
     this.renderAnimationCSS = this.renderAnimationCSS.bind(this);
@@ -49,6 +52,10 @@ export default class App extends React.Component {
     this.onClickElement = this.onClickElement.bind(this);
     this.appEvent = this.appEvent.bind(this);
     this.getMasterTimeline = this.getMasterTimeline.bind(this);
+    this.getElementProperties = this.getElementProperties.bind(this);
+
+
+
 
 
 
@@ -335,7 +342,7 @@ export default class App extends React.Component {
    * @param {object} timeline
    */
   handleTimelineChange(timeline) {
-    console.log('handleTimelineChange', timeline);
+    // console.log('handleTimelineChange', timeline);
     const { timelines } = this.state;
     const { keyPath } = timeline;
     const newTimelines = _.cloneDeep(timelines);
@@ -361,6 +368,24 @@ export default class App extends React.Component {
     });
   }
 
+  /*
+   * @param {object} timeline
+   */
+  handleElementChange(keyPath, element) {
+    const { elements } = this.state;
+    const newElements = _.cloneDeep(elements);
+    let target = this.getElementProperties(keyPath, newElements);
+    console.log('handleElementChange', keyPath, element);
+    // target = element;
+
+    _.assign(target, element);
+
+
+    this.setState({
+      elements: newElements
+    });
+  }
+
   onClickShowEditor() {
     this.setState({
       showEditor: true
@@ -373,6 +398,28 @@ export default class App extends React.Component {
     });
   }
 
+  /*
+   * @param {array} activeElementKeyPath
+   * @param {array} elements
+   * @retuns {object}
+   */
+  getElementProperties(activeElementKeyPath, elements) {
+    // console.log('getElementProperties', activeElementKeyPath, elements);
+    const target = activeElementKeyPath && elements[activeElementKeyPath[0]];
+    let results;
+    if (target) {
+      if (target.elements) {
+        const newKeyPath = activeElementKeyPath.slice(1);
+        results = this.getElementProperties(newKeyPath, target.elements);
+      } else {
+        results = target;
+      }
+    } else {
+      results = {};
+    }
+
+    return results;
+  }
   /*
    * @param {array} activeKeyPath
    * @returns {boolean}
@@ -437,14 +484,14 @@ export default class App extends React.Component {
       css += _this.renderTimelineCSS(timeline, type);
 
       // Render nested timeline CSS
-      if (timeline.descendants && timeline.descendants.length) {
-        _.each(timeline.descendants, function(descendant) {
+      if (timeline.animations && timeline.animations.length) {
+        _.each(timeline.animations, function(descendant) {
           css += lineBreak + lineBreak + _this.renderTimelineCSS(descendant, type);
         });
       }
     });
 
-    // console.log('renderAnimationCSS', css);
+    // console.log('renderAnimationCSS', css, timelines, type);
     return css;
   }
 
@@ -488,6 +535,7 @@ export default class App extends React.Component {
    * @returns {string}
    */
   renderAnimatedKeyframesCSS(timeline) {
+    const { name } = timeline;
     // const keyframes = keyframes;
     let css = '';
     let animationProperties = timeline.animationProperties;
@@ -495,8 +543,8 @@ export default class App extends React.Component {
     const indent = '  ';
 
     if (animationProperties) {
-      const selectorOpen = `.TimelineTrack[name="${timeline.timelineName}"] .animation-key {`;
-      const animation = `animation: ${timeline.timelineName}-cursor ${animationProperties.duration} infinite linear;`;
+      const selectorOpen = `.TimelineTrack[name="${name}"] .animation-key {`;
+      const animation = `animation: ${name}-cursor ${animationProperties.duration} infinite linear;`;
       const selectorClose = `}`;
 
 
@@ -541,7 +589,7 @@ export default class App extends React.Component {
    */
   getAnimationProperties(timeline, type) {
     // console.log('getAnimationProperties', timeline, type);
-    const { animationProperties, timelineProperties } = timeline;
+    const { animationProperties, timelineProperties, name } = timeline;
 
 
       const lineBreak = '\n';
@@ -574,8 +622,8 @@ export default class App extends React.Component {
     }
 
     if (_.isObject(animationProperties)) {
-      let selectorOpen = `${preview}[name="${timeline.timelineName}"] {`;
-      let selectorAnimation = `animation: ${timeline.timelineName} ${animationProperties.duration} ${animationProperties.iteration} ${animationProperties.timingFunction} ${animationProperties.animationDirection};`;
+      let selectorOpen = `${preview}[data-animation-name="${name}"] {`;
+      let selectorAnimation = `animation: ${name} ${animationProperties.duration} ${animationProperties.iteration} ${animationProperties.timingFunction} ${animationProperties.animationDirection};`;
       let selectorClose = `}`;
 
 //       css +=
@@ -596,21 +644,22 @@ export default class App extends React.Component {
 
   /*
    * @param {object} timeline
+   * @returns {string}
    */
   getCSSKeyframes(timeline) {
-    let keyframes = timeline.keyframes;
+    const { keyframes, name } = timeline;
     const lineBreak = '\n';
     const indent = '  ';
 
     let css = this.generateCSSKeyframes(keyframes, 2);
     if (css) {
-      const selectorOpen = `@keyframes ${timeline.timelineName} {`;
+      const selectorOpen = `@keyframes ${name} {`;
       const selectorClose = `}`;
 
       css = selectorOpen + lineBreak + css + lineBreak + selectorClose;
     }
 
-    // console.log('getCSSKeyframes', css);
+    // console.log('getCSSKeyframes', css, timeline);
     return css;
   }
   /*
@@ -650,12 +699,13 @@ export default class App extends React.Component {
   }
 
   /*
+   * CSS Animation Stylesheet
    * @param {array} timelines
    * @param {object} masterTimeline
    * @returns {string}
    */
   compileAnimationCSS(timelines, masterTimeline) {
-    console.log('compileAnimationCSS', timelines, masterTimeline);
+    // console.log('compileAnimationCSS', timelines, masterTimeline);
     return this.renderAnimationCSS(timelines) + this.renderAnimatedKeyframesCSS(masterTimeline) + this.getCSSKeyframeCursor(masterTimeline);
   }
 
@@ -756,7 +806,7 @@ export default class App extends React.Component {
           <meta charSet="utf-8" />
           <title>CSS Animation Factory</title>
           <style type="text/css" id={baseCSS}>{this.state.baseCSS}</style>
-          <style type="text/css" id={animationCSS}>{this.compileAnimationCSS(timelines, this.getMasterTimeline(timelines))}</style>
+          <style type="text/css" id={animationCSS}>{this.compileAnimationCSS(animations, this.getMasterTimeline(timelines))}</style>
         </Helmet>
         <div className="navigation">
           {this.renderEditorBtn(showEditor)}
@@ -789,12 +839,14 @@ export default class App extends React.Component {
           showEditor={showEditor}
           rightSidebarData={rightSidebarData}
           renderAnimationCSS={this.renderAnimationCSS}
+          handleElementChange={this.handleElementChange}
           handleChange={this.handleChange}
           updateTimelineProperties={this.updateTimelineProperties}
           updatePreviewKeyPath={this.updatePreviewKeyPath}
           appEvent={this.appEvent}
           onClickTimelineTrack={this.onClickTimelineTrack}
           getMasterTimeline={this.getMasterTimeline}
+          getElementProperties={this.getElementProperties}
           />
       </div>
     );

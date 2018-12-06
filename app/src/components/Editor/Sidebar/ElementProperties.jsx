@@ -1,41 +1,63 @@
 import React from 'react';
 import _ from 'lodash';
+import { Select } from 'antd';
 
 export default class ElementProperties extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleSelectChange = this.handleSelectChange.bind(this);
+  }
 
-  /*
-   * @param {array} activeElementKeyPath
-   * @param {array}  elements
-   * @retuns {object}
-   */
-  getElementProperties(activeElementKeyPath, elements) {
-    console.log('getElementProperties', activeElementKeyPath, elements);
-    const target = activeElementKeyPath && elements[activeElementKeyPath[0]];
-    let results;
-    if (target) {
-      if (target.elements) {
-        const newKeyPath = activeElementKeyPath.slice(1);
-        results = this.getElementProperties(newKeyPath, target.elements);
+  getAnimations(animations) {
+    let names = [];
+    _.each(animations, (animation) => {
+      if (animation.animations) {
+         names.push(animation.name, ...this.getAnimations(animation.animations));
       } else {
-        results = target;
+        names.push(animation.name);
       }
-    } else {
-      results = {};
-    }
+    });
 
-    return results;
+    return names;
+  }
+
+  getOptions(names) {
+    return _.map(names, (name) => {
+      return (
+        <Select.Option value={name}>
+          {name}
+        </Select.Option>
+      );
+    });
+  }
+
+  handleSelectChange(value, keyPath, props, action) {
+    console.log('handleSelectChange', value);
+    const newProps = _.cloneDeep(props);
+
+    newProps.linkedAnimationName = value;
+
+    action(keyPath, newProps);
   }
 
   render () {
-    const { activeElementKeyPath, elements } = this.props;
-    const elementProperties = this.getElementProperties(activeElementKeyPath, elements);
+    const { animations, activeElementKeyPath, elements, getElementProperties, handleElementChange } = this.props;
+    const elementProperties = getElementProperties(activeElementKeyPath, elements);
     console.log('ElementProperties - render', this.props);
+    console.log(this.getAnimations(animations));
 
-    const { name } = elementProperties;
-
+    const { keyPath, name, linkedAnimationName } = elementProperties;
+// onChange={() => {handleElementChange(keyPath, elementProperties)}}
     return (
       <div>
         Name: { name }
+          <Select
+            value={ linkedAnimationName }
+            style={{ width: 120 }}
+            onChange={(value) => {this.handleSelectChange(value, activeElementKeyPath, elementProperties, handleElementChange)}}
+          >
+            { this.getOptions(this.getAnimations(animations)) }
+          </Select>
       </div>
     );
   }
