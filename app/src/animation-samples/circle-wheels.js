@@ -8,6 +8,7 @@ export default {
         {
           name: 'ring-one',
           linkedAnimationName: 'ring-one-spin',
+          linkedAnimationKeyPath: [0, 0],
           type: 'div',
           className : 'rings'
         },

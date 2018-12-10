@@ -53,6 +53,13 @@ export default class App extends React.Component {
     this.appEvent = this.appEvent.bind(this);
     this.getMasterTimeline = this.getMasterTimeline.bind(this);
     this.getElementProperties = this.getElementProperties.bind(this);
+    this.getAnimationProperties_ = this.getAnimationProperties_.bind(this);
+    this.getProperties = this.getProperties.bind(this);
+
+
+
+
+
 
 
 
@@ -399,17 +406,17 @@ export default class App extends React.Component {
   }
 
   /*
-   * @param {array} activeElementKeyPath
+   * @param {array} keyPath
    * @param {array} elements
    * @retuns {object}
    */
-  getElementProperties(activeElementKeyPath, elements) {
-    // console.log('getElementProperties', activeElementKeyPath, elements);
-    const target = activeElementKeyPath && elements[activeElementKeyPath[0]];
+  getElementProperties(keyPath, elements) {
+    // console.log('getElementProperties', keyPath, elements);
+    const target = keyPath && elements[keyPath[0]];
     let results;
     if (target) {
       if (target.elements) {
-        const newKeyPath = activeElementKeyPath.slice(1);
+        const newKeyPath = keyPath.slice(1);
         results = this.getElementProperties(newKeyPath, target.elements);
       } else {
         results = target;
@@ -420,6 +427,56 @@ export default class App extends React.Component {
 
     return results;
   }
+
+  /*
+   * @param {array} keyPath
+   * @param {array} animations
+   * @retuns {object}
+   */
+  getAnimationProperties_(keyPath, animations) {
+    // // console.log('getElementProperties', keyPath, animations);
+    // const target = keyPath && animations[keyPath[0]];
+    // let results;
+    // if (target) {
+    //   if (target.animations) {
+    //     const newKeyPath = keyPath.slice(1);
+    //     results = this.getElementProperties(newKeyPath, target.animations);
+    //   } else {
+    //     results = target;
+    //   }
+    // } else {
+    //   results = {};
+    // }
+
+    // return results;
+
+    return this.getProperties(keyPath, animations, 'animations');
+  }
+
+  /*
+   * @param {array} keyPath
+   * @param {array} items
+   * @param {string} itemsKey
+   * @retuns {object}
+   */
+  getProperties(keyPath, items, itemsKey) {
+    // console.log('getProperties', keyPath, animations);
+    const target = keyPath && items && items[keyPath[0]];
+    let results;
+    if (target) {
+      if (target[itemsKey]) {
+        const newKeyPath = keyPath.slice(1);
+        results = this.getProperties(newKeyPath, target[itemsKey]);
+      } else {
+        results = target;
+      }
+    } else {
+      results = {};
+    }
+
+    return results;
+  }
+
   /*
    * @param {array} activeKeyPath
    * @returns {boolean}
@@ -819,8 +876,10 @@ export default class App extends React.Component {
         </div>
         <Preview
           elements={elements}
+          animations={animations}
           activeKeyPath={this.getPreviewKeyPath(activeElementKeyPath, activePreviewKeyPath)}
           activeTimelineKeyPath={this.getPreviewKeyPath(activeElementKeyPath, activePreviewKeyPath)}
+          getProperties={ this.getProperties }
           isTimelineActive={this.isTimelineActive}
           onClickPreview={this.onClickPreview}
           onClickElement={this.onClickElement}
@@ -847,6 +906,7 @@ export default class App extends React.Component {
           onClickTimelineTrack={this.onClickTimelineTrack}
           getMasterTimeline={this.getMasterTimeline}
           getElementProperties={this.getElementProperties}
+          getAnimationProperties={this.getAnimationProperties_}
           />
       </div>
     );

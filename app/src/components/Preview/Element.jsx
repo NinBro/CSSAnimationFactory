@@ -30,13 +30,15 @@ export default class Element extends React.Component {
   }
 
   render () {
-    const { children, name, linkedAnimationName, keyPath, updatePreviewKeyPath, handleTimelineChange, onClickElement, ...props } = this.props;
+    const { children, animations, name, linkedAnimationName, linkedAnimationKeyPath, getProperties, keyPath, updatePreviewKeyPath, handleTimelineChange, onClickElement, ...props } = this.props;
+    const animationName = getProperties(linkedAnimationKeyPath, animations, 'animations').name;
+
     return (
       <Tooltip title={name}>
         <div
           { ...props }
           name={ name }
-          data-animation-name={ linkedAnimationName }
+          data-animation-name={ animationName }
           onClick={(e) => {this.handleOnClick(e, onClickElement, keyPath)}}
           onMouseEnter={(e) => {this.handleOnHover(e, updatePreviewKeyPath, keyPath)}}
           onMouseLeave={(e) => {this.handleOnHover(e, updatePreviewKeyPath, [])}}

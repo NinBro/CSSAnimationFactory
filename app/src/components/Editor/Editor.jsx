@@ -5,7 +5,7 @@ import './Editor.scss';
 
 export default class Editor extends React.Component {
   render () {
-    const { activeElementKeyPath, getElementProperties, activeTimelineKeyPath, appEvent, animations, elements, showEditor, rightSidebarData,
+    const { activeElementKeyPath, getElementProperties, getAnimationProperties, activeTimelineKeyPath, appEvent, animations, elements, showEditor, rightSidebarData,
       getMasterTimeline, renderAnimationCSS, handleChange, updateTimelineProperties,
       isTimelineActive, updatePreviewKeyPath, onClickTimelineTrack, timelines, handleElementChange } = this.props;
 
@@ -40,6 +40,7 @@ export default class Editor extends React.Component {
           active: true,
           activeElementKeyPath,
           getElementProperties,
+          getAnimationProperties,
           handleElementChange
         },
         timelineEditor: {

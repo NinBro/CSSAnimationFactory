@@ -27,7 +27,7 @@ export default class Sidebar extends React.Component {
   }
 
   render () {
-    const { updateTimelineProperties, view, animations, elements, activeElementKeyPath, getElementProperties, handleElementChange } = this.props;
+    const { updateTimelineProperties, view, animations, elements, activeElementKeyPath, getElementProperties, getAnimationProperties, handleElementChange } = this.props;
 
     console.log('Sidebar - render', this.props);
     let data = this.props.data;
@@ -47,32 +47,32 @@ export default class Sidebar extends React.Component {
 
     console.log('Sidebar - render', this.props);
 
-    if (data && data.timeline) {
-      content = (
-        <AnimationProperties
-          {...data.timeline}
-          updateTimelineProperties={updateTimelineProperties}
-          onChange={this.handleChange} />
-      );
-    } else if (this.props.type === 'editor') {
-      content = (
-        <div>
-          <CSSEditor data={this.props.data} onChange={this.handleChange} />
-        </div>
-        );
-    } else {
+    // if (data && data.timeline) {
+    //   content = (
+    //     <AnimationProperties
+    //       {...data.timeline}
+    //       updateTimelineProperties={updateTimelineProperties}
+    //       onChange={this.handleChange} />
+    //   );
+    // } else if (this.props.type === 'editor') {
+    //   content = (
+    //     <div>
+    //       <CSSEditor data={this.props.data} onChange={this.handleChange} />
+    //     </div>
+    //     );
+    // } else {
 
-      // CODE MIRROR
-      // Have to manually re-update.... :/
-      if (this.refs && this.refs.cmEditor) {
-        if (this.props.data !== this.refs.cmEditor.getCodeMirror().getValue()) {
-          this.refs.cmEditor.getCodeMirror().setValue(data);
-        }
-      }
-      content = (
-        <CodeMirror ref="cmEditor" className="content-container compiled-css" value={data} options={options} />
-      )
-    }
+    //   // CODE MIRROR
+    //   // Have to manually re-update.... :/
+    //   if (this.refs && this.refs.cmEditor) {
+    //     if (this.props.data !== this.refs.cmEditor.getCodeMirror().getValue()) {
+    //       this.refs.cmEditor.getCodeMirror().setValue(data);
+    //     }
+    //   }
+    //   content = (
+    //     <CodeMirror ref="cmEditor" className="content-container compiled-css" value={data} options={options} />
+    //   )
+    // }
 
 
     switch (view) {
@@ -91,7 +91,40 @@ export default class Sidebar extends React.Component {
           );
         break;
       case 'elementProperties':
-        content = <ElementProperties handleElementChange={handleElementChange} getElementProperties={getElementProperties} animations={animations} elements={elements} activeElementKeyPath={activeElementKeyPath} />;
+
+          const elementProperties = getElementProperties(activeElementKeyPath, elements);
+          const animationProperties = getAnimationProperties(elementProperties.linkedAnimationKeyPath, animations);
+
+          let animationEl;
+          if (!_.isEmpty(elementProperties.linkedAnimationKeyPath)) {
+            animationEl = (
+              <AnimationProperties
+                { ...animationProperties }
+                updateTimelineProperties={updateTimelineProperties}
+                onChange={this.handleChange} />
+            );
+          } else {
+            animationEl = null;
+          }
+
+
+        if (!_.isEmpty(activeElementKeyPath)) {
+          content = (
+            <div>
+              <ElementProperties
+                { ...elementProperties }
+                handleElementChange={handleElementChange}
+                getElementProperties={getElementProperties}
+                animations={animations}
+                activeElementKeyPath={activeElementKeyPath} />
+                { animationEl }
+            </div>
+          );
+        } else {
+          content = null;
+        }
+
+
         break;
     };
 
