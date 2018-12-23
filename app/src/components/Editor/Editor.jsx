@@ -25,10 +25,8 @@ export default class Editor extends React.Component {
       let editorData = {
         // leftSidebarData: leftSidebarData,
         leftSidebarData: {
-          view: 'elements',
-          activeElementKeyPath,
-          elements,
-          animations
+          ...this.props,
+          view: 'elements'
         },
         rightSidebarData: {
           onChange: handleChange,
@@ -50,6 +48,9 @@ export default class Editor extends React.Component {
           updatePreviewKeyPath,
           appEvent,
           onClickTimelineTrack,
+          getAnimationProperties,
+          animations,
+          elements,
           timelines,
           masterTimeline: getMasterTimeline(timelines)
         }

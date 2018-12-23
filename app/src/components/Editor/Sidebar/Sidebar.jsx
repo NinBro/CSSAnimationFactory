@@ -81,8 +81,8 @@ export default class Sidebar extends React.Component {
           <div>
             Elements
             <Elements
-              activeKeyPath={activeElementKeyPath}
-              elements={elements} />
+              { ...this.props }
+              activeKeyPath={activeElementKeyPath} />
             Animations
             <Animations
               activeElementKeyPath={activeElementKeyPath}
@@ -91,7 +91,6 @@ export default class Sidebar extends React.Component {
           );
         break;
       case 'elementProperties':
-
           const elementProperties = getElementProperties(activeElementKeyPath, elements);
           const animationProperties = getAnimationProperties(elementProperties.linkedAnimationKeyPath, animations);
 
@@ -106,8 +105,6 @@ export default class Sidebar extends React.Component {
           } else {
             animationEl = null;
           }
-
-
         if (!_.isEmpty(activeElementKeyPath)) {
           content = (
             <div>
@@ -123,16 +120,22 @@ export default class Sidebar extends React.Component {
         } else {
           content = null;
         }
-
-
         break;
     };
 
-    return (
-      <div className={classNames('Sidebar sidebar', positionClass, stateClass, view)}>
-        { content }
-      </div>
-    );
+
+    let sidebarContainer;
+    if (content) {
+      sidebarContainer = (
+        <div className={classNames('Sidebar sidebar', positionClass, stateClass, view)}>
+          { content }
+        </div>
+      );
+    } else {
+      sidebarContainer = null;
+    }
+
+    return sidebarContainer;
   }
 }
 

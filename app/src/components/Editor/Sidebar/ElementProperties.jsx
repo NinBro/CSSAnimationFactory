@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import { Select } from 'antd';
+import { Input, Select } from 'antd';
 
 export default class ElementProperties extends React.Component {
   constructor(props) {
@@ -8,8 +8,10 @@ export default class ElementProperties extends React.Component {
     this.handleSelectChange = this.handleSelectChange.bind(this);
   }
 
-
   /*
+   * Flatten animations
+   * @param {array} animations
+   * @param {keypath} array
    * @returns [array]
    */
   getAnimations(animations, keyPath) {
@@ -32,8 +34,16 @@ export default class ElementProperties extends React.Component {
    */
   getOptions(animations) {
     // console.log('getOptions', animations);
-    return _.map(animations, (animation) => {
-      const { name, keyPath } = animation;
+
+    const noneOption = {
+      keyPath: [],
+      name: 'None'
+    };
+
+    const options = [noneOption, ...animations];
+
+    return _.map(options, (option) => {
+      const { name, keyPath } = option;
       const selectKeyPath = keyPath.join('X');
       return (
         <Select.Option value={selectKeyPath}>
@@ -43,6 +53,12 @@ export default class ElementProperties extends React.Component {
     });
   }
 
+  /*
+   * @param {string} value
+   * @param {array} keypath
+   * @param {object} props
+   * @param {function} action
+   */
   handleSelectChange(value, keyPath, props, action) {
     console.log('handleSelectChange', value);
     const newProps = _.cloneDeep(props);
@@ -53,19 +69,23 @@ export default class ElementProperties extends React.Component {
     action(keyPath, newProps);
   }
 
+  /*
+   * @param {string} value
+   * @param {array} keypath
+   * @param {object} props
+   * @param {function} action
+   */
+  handleChange(key, value, keyPath, props, action) {
+    console.log('handleChange', value);
+    const newProps = _.cloneDeep(props);
+    newProps[key] = value;
+    action(keyPath, newProps);
+  }
+
   render () {
-    const { keyPath, name, linkedAnimationName, linkedAnimationKeyPath, animations, activeElementKeyPath, elements, getElementProperties, handleElementChange } = this.props;
-    const selectKeyPath = linkedAnimationKeyPath.join('X');
+    const { className, keyPath, name, linkedAnimationName, linkedAnimationKeyPath, animations, activeElementKeyPath, elements, getElementProperties, handleElementChange } = this.props;
+    const selectKeyPath = !_.isEmpty(linkedAnimationKeyPath) ? linkedAnimationKeyPath.join('X') : [];
 
-
-    // const elementProperties = getElementProperties(activeElementKeyPath, elements);
-    // console.log('ElementProperties - render', this.props);
-
-
-    // console.log('getAnimations', this.getAnimations(animations));
-
-    // const { keyPath, name, linkedAnimationName } = this.props;
-// onChange={() => {handleElementChange(keyPath, elementProperties)}}
     return (
       <div>
         Element Name: { name }
@@ -78,6 +98,8 @@ export default class ElementProperties extends React.Component {
         >
           { this.getOptions(this.getAnimations(animations)) }
         </Select>
+        Class Name
+        <Input value={className} onChange={(value) => {this.handleChange('className', value.target.value, activeElementKeyPath, this.props, handleElementChange )}} />
       </div>
     );
   }

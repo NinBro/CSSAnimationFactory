@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import { Tooltip } from 'antd';
+import Node from './Node.jsx';
 
 export default class Element extends React.Component {
   constructor(props) {
@@ -35,7 +36,7 @@ export default class Element extends React.Component {
 
     return (
       <Tooltip title={name}>
-        <div
+        <Node
           { ...props }
           name={ name }
           data-animation-name={ animationName }
@@ -44,7 +45,7 @@ export default class Element extends React.Component {
           onMouseLeave={(e) => {this.handleOnHover(e, updatePreviewKeyPath, [])}}
         >
           { children }
-        </div>
+        </Node>
       </Tooltip>
     );
   }

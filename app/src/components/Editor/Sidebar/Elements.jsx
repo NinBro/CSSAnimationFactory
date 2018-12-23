@@ -4,10 +4,7 @@ import classNames from 'classnames';
 
 export default class Elements extends React.Component {
 
-
-
-
-  renderElements(activeKeyPath, elements, currentKeyPath) {
+  renderElements(activeKeyPath, elements, onClickElement, currentKeyPath) {
     let node;
     if (elements) {
       node = elements.map((element, i) => {
@@ -21,9 +18,13 @@ export default class Elements extends React.Component {
             key={i}
             keyPath={elementKeyPath}
             className={ classNames('layer', active) }
+            onClick={(e) => {
+              e.stopPropagation();
+              onClickElement(elementKeyPath);
+            }}
           >
             { name }
-            { this.renderElements(activeKeyPath, elements, elementKeyPath) }
+            { this.renderElements(activeKeyPath, elements, onClickElement, elementKeyPath) }
           </div>
         );
       });
@@ -34,6 +35,11 @@ export default class Elements extends React.Component {
     return node;
   }
 
+  /*
+   * @param {array} activeKeyPath
+   * @param {array} elementKeyPath
+   * @returns {boolean}
+   */
   isElementActive(activeKeyPath, elementKeyPath) {
     return !_.isEmpty(activeKeyPath) &&  !_.isEmpty(activeKeyPath) && this.keyPath2Str(activeKeyPath) === this.keyPath2Str(elementKeyPath);
   }
@@ -43,11 +49,11 @@ export default class Elements extends React.Component {
   }
 
   render () {
-    const { activeKeyPath, elements } = this.props;
+    const { activeKeyPath, elements, onClickElement } = this.props;
 
     return (
       <div className="elements-container">
-        { this.renderElements(activeKeyPath, elements) }
+        { this.renderElements(activeKeyPath, elements, onClickElement) }
       </div>
     );
   }

@@ -2,7 +2,6 @@
 body {
   font: 100% $font-stack;
   color: $primary-color;
-  background: $primary-color;
 
   .app {
     position: fixed;
@@ -151,6 +150,8 @@ body {
           // secondary...
 
           .timeline-track {
+            height: 20px;
+
             &:hover {
               .timeline-meta {
                 background-color: #898585;
@@ -218,13 +219,7 @@ body {
                 padding: 3px;
               }
             }
-          }
 
-
-          .timeline {
-            position: relative;
-            margin-left: $meta-width + 2px;
-            height: 20px;
 
             .notches {
               width: 100%;
@@ -261,9 +256,37 @@ body {
                 &:nth-child(10n+1) {
                   height: 66%;
                 }
+
+
+                &.keyframe {
+                  // keyframe
+                  &:after {
+                    content: '';
+                    height: 6px;
+                    width: 6px;
+                    background: #108ee9;
+                    border-radius: 4px;
+                    display: block;
+                    position: absolute;
+                    top: 3px;
+                    z-index: 99999;
+                  }
+                }
+
               }
             }
+
+.animation-key {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      // transform: translate(0%, 0);
+      border-left: 1px solid red;
+    }
+
           }
+
+
         }
     }
   }

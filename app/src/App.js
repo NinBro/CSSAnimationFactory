@@ -85,8 +85,9 @@ export default class App extends React.Component {
   }
 
   componentWillMount() {
-    const appData = this.getAppData();
-    const { animations, elements } = appData;
+    const sample = 'monkey404';
+    const appData = this.loadSample(sample);
+    const { animations, elements, rawCSS } = appData;
 
     // Set ID for each timeline for tracking
     let i = this.state.timelineCount;
@@ -106,7 +107,8 @@ export default class App extends React.Component {
     });
 
     this.setState({
-      baseCSS: this.getRawCSS(),
+      sample,
+      baseCSS: rawCSS,
       appData,
       timelines: formattedTimelines,
       timelineCount: i,
@@ -115,6 +117,11 @@ export default class App extends React.Component {
     });
   }
 
+  /*
+   * Load sample animation preset
+   * @param {string} sample
+   * @returns {object}
+   */
   loadSample(sample) {
     let data;
     switch (sample) {
@@ -131,18 +138,20 @@ export default class App extends React.Component {
 
   // Starting point for data
   getAppData() {
-    return this.loadSample('circleWheels');
+    return this.loadSample('monkey404');
   }
 
-  getRawCSS() {
-    return this.getAppData().rawCSS;
-  }
   /*
+   * Change animation sample preset
    * @param {string} - sample
    */
   handleSampleChange(sample) {
-    const { timelines, previewContentCSS, rawCSS } = this.loadSample(sample);
+    const { animations, elements, timelines, previewContentCSS, rawCSS } = this.loadSample(sample);
     this.setState({
+      sample,
+      baseCSS: rawCSS,
+      animations,
+      elements,
       timelines,
       previewContentCSS,
       rawCSS
@@ -325,10 +334,11 @@ export default class App extends React.Component {
   }
 
  /*
-  * ...
+  * Makes current element active
+  * @param {array} keyPath
   */
   onClickElement(keyPath) {
-    console.log('onClickPreview');
+    console.log('onClickElement', keyPath);
     this.setState({
       rightSidebarData: {
         active: true
@@ -376,7 +386,8 @@ export default class App extends React.Component {
   }
 
   /*
-   * @param {object} timeline
+   * @param {array} keyPath - element location to change
+   * @param {object} element - new props
    */
   handleElementChange(keyPath, element) {
     const { elements } = this.state;
@@ -415,7 +426,8 @@ export default class App extends React.Component {
     const target = keyPath && elements[keyPath[0]];
     let results;
     if (target) {
-      if (target.elements) {
+      // Make sure stop only if we need to. If there is more depth then go deeper
+      if (target.elements && keyPath.length > 1) {
         const newKeyPath = keyPath.slice(1);
         results = this.getElementProperties(newKeyPath, target.elements);
       } else {
@@ -454,9 +466,10 @@ export default class App extends React.Component {
   }
 
   /*
-   * @param {array} keyPath
+   * Get properties for a particular element or animation
+   * @param {array} keyPath - key path where properties are located
    * @param {array} items
-   * @param {string} itemsKey
+   * @param {string} itemsKey - recursive key e.g. 'elements' or 'animations'
    * @retuns {object}
    */
   getProperties(keyPath, items, itemsKey) {
@@ -624,7 +637,7 @@ export default class App extends React.Component {
     let css = '';
 
       css = `
-@keyframes ${timeline.timelineName}-cursor {
+@keyframes ${timeline.name}-cursor {
   0% {
     transform: translate(0%, 0);
   }
@@ -852,7 +865,7 @@ export default class App extends React.Component {
     let _this = this;
     let baseCSS = 'baseCSS';
     let animationCSS = 'animationCSS';
-    const { animations, elements, activeElementKeyPath, activeTimelineKeyPath, activePreviewKeyPath, timelines, showEditor, rightSidebarData } = this.state;
+    const { sample, animations, elements, activeElementKeyPath, activeTimelineKeyPath, activePreviewKeyPath, timelines, showEditor, rightSidebarData } = this.state;
 
     // let activeElementKeyPath = [0, 0];
 
@@ -869,7 +882,7 @@ export default class App extends React.Component {
           {this.renderEditorBtn(showEditor)}
           <Button onClick={this.onclickAddNewTimeline.bind(this)}>Add Timeline</Button>
           <Button onClick={this.onClickEditBaseCSS.bind(this)}>Edit Base CSS</Button>
-          <Select defaultValue="circleWheels" style={{ width: 120 }} onChange={this.handleSampleChange}>
+          <Select defaultValue={ sample } style={{ width: 120 }} onChange={this.handleSampleChange}>
             <Option value="circleWheels">circleWheels</Option>
             <Option value="monkey404">monkey404</Option>
           </Select>
@@ -904,10 +917,11 @@ export default class App extends React.Component {
           updatePreviewKeyPath={this.updatePreviewKeyPath}
           appEvent={this.appEvent}
           onClickTimelineTrack={this.onClickTimelineTrack}
+          onClickElement={this.onClickElement}
           getMasterTimeline={this.getMasterTimeline}
           getElementProperties={this.getElementProperties}
           getAnimationProperties={this.getAnimationProperties_}
-          />
+        />
       </div>
     );
   }

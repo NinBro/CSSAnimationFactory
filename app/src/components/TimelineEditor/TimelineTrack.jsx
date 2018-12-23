@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
 import './TimelineTrack.scss';
+import Notch from './Notch.jsx';
 
 export default class TimelineTrack extends React.Component {
   constructor(props) {
@@ -10,42 +11,43 @@ export default class TimelineTrack extends React.Component {
     this.updateTimelineProperties = this.updateTimelineProperties.bind(this);
   }
 
-  Notch(props) {
+  // Notch(props) {
 
-      // Show label for each second
-      let i;
-      let markers = {};
-      let timelineLabel = '';
-      var duration = parseInt(props.animationProperties.duration);
-      var timeSegment = 100 / duration;
-      for (i = 0; i < duration + 1; i++) {
-        markers[timeSegment * i] = i + 's';
-      }
+  //     // Show label for each second
+  //     let i;
+  //     let markers = {};
+  //     let timelineLabel = '';
+  //     var duration = parseInt(props.animationProperties.duration);
+  //     var timeSegment = 100 / duration;
+  //     for (i = 0; i < duration + 1; i++) {
+  //       markers[timeSegment * i] = i + 's';
+  //     }
 
-      if (props.timelineName === 'Master' && !_.isEmpty(markers[props.position])) {
-        timelineLabel = (
-          <div className="time-label">
-            {markers[props.position]}
-          </div>)
-      }
+  //     if (props.timelineName === 'Master' && !_.isEmpty(markers[props.position])) {
+  //       timelineLabel = (
+  //         <div className="time-label">
+  //           {markers[props.position]}
+  //         </div>)
+  //     }
 
 
-    return  (
-      <div is class="notch" position={props.position}>
-        {timelineLabel}
-      </div>
-    )
-  }
+  //   return  (
+  //     <div is class="notch" position={props.position}>
+  //       {timelineLabel}
+  //     </div>
+  //   )
+  // }
 
-  getNotches() {
+  getNotches(props) {
     let notchCnt = 101; // 0-100 on %
     let notches = [];
     let i;
     for (i = 0; i < notchCnt; i++) {
-      notches.push(<this.Notch position={i} {...this.props} />);
+      notches.push(<Notch position={i} {...props} />);
     }
 
     return notches;
+    // return  null;
   }
 
   // Show config menu....
@@ -62,38 +64,9 @@ export default class TimelineTrack extends React.Component {
     this.props.updateTimelineProperties(props, this.props);
   }
 
-  /*
-   * @param {object} timelineProperties
-   * @returns {node}
-   */
-  renderAnimationStateBtn(timelineProperties) {
-    let element = null;
-    if (timelineProperties && timelineProperties.playState && timelineProperties.playState === 'paused') {
-      element = <span onClick={(e) => {this.updateTimelineProperties(e, { playState: 'running'})}}>Play</span>;
-    } else {
-      element = <span onClick={(e) => {this.updateTimelineProperties(e, { playState: 'paused'})}}>Pause</span>;
-    }
-
-    return element;
-  }
-
-  /*
-   * @param {object} timelineProperties
-   * @returns {node}
-   */
-  renderVisibilityBtn(timelineProperties) {
-    let element = null;
-    if (timelineProperties && timelineProperties.visible === false) {
-      element = <span onClick={(e) => {this.updateTimelineProperties(e, {visible: true})}}>Show</span>;
-    } else {
-      element = <span onClick={(e) => {this.updateTimelineProperties(e, {visible: false})}}>Hide</span>;
-    }
-
-    return element;
-  }
 
   render () {
-    const { active, timelineProperties, keyPath, updatePreviewKeyPath } = this.props;
+    const { active, animationProperties, timelineProperties, keyPath, updatePreviewKeyPath, name } = this.props;
 
 
     let extraClasses = '';
@@ -111,25 +84,19 @@ export default class TimelineTrack extends React.Component {
     return (
       <div
         className={classNames('TimelineTrack timeline-track', extraClasses, activeClass)}
-        name={this.props.timelineName}
+        name={animationProperties.name}
         onClick={this.onClick}
-      >
-        <div className={classNames("timeline-meta", activeClass)}>
-          <input type="text" className="name" value={this.props.timelineName} />
-          { this.renderAnimationStateBtn(timelineProperties) }
-          { this.renderVisibilityBtn(timelineProperties) }
-        </div>
-        <div
-          className="timeline"
-          onMouseEnter={() => {updatePreviewKeyPath(keyPath)}}
-          onMouseLeave={() => {updatePreviewKeyPath([])}}
-        >
-          <div className="animation-key"/>
-          <div className="notches">
-            {this.getNotches()}
-          </div>
-          <div className="animation-key"></div>
-        </div>
+                    onMouseEnter={() => {updatePreviewKeyPath(keyPath)}}
+            onMouseLeave={() => {updatePreviewKeyPath([])}} >
+
+
+            <div className="animation-key"/>
+            <div className="notches">
+              {this.getNotches(animationProperties)}
+            </div>
+            <div className="animation-key"></div>
+
+
       </div>
     );
   }
