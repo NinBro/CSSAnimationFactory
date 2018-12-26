@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 export default class Elements extends React.Component {
 
-  renderElements(activeKeyPath, elements, onClickElement, currentKeyPath) {
+  renderElements(updatePreviewKeyPath, activePreviewKeyPath, activeKeyPath, elements, onClickElement, currentKeyPath) {
     let node;
     if (elements) {
       node = elements.map((element, i) => {
@@ -12,19 +12,22 @@ export default class Elements extends React.Component {
         const elementKeyPath = currentKeyPath ? [...currentKeyPath, i] : [i];
 
         let active = this.isElementActive(activeKeyPath, elementKeyPath) ? 'active' : '';
+        let hover = this.isElementActive(activePreviewKeyPath, elementKeyPath) ? 'hover' : '';
 
         return (
           <div
             key={i}
             keyPath={elementKeyPath}
-            className={ classNames('layer', active) }
+            className={ classNames('layer', active, hover) }
             onClick={(e) => {
               e.stopPropagation();
               onClickElement(elementKeyPath);
             }}
+            onMouseEnter={() => {updatePreviewKeyPath(elementKeyPath)}}
+            onMouseLeave={() => {updatePreviewKeyPath([])}}
           >
             { name }
-            { this.renderElements(activeKeyPath, elements, onClickElement, elementKeyPath) }
+            { this.renderElements(updatePreviewKeyPath, activePreviewKeyPath, activeKeyPath, elements, onClickElement, elementKeyPath) }
           </div>
         );
       });
@@ -36,6 +39,7 @@ export default class Elements extends React.Component {
   }
 
   /*
+   * Compares paths as strings to find if they are eqal
    * @param {array} activeKeyPath
    * @param {array} elementKeyPath
    * @returns {boolean}
@@ -49,11 +53,11 @@ export default class Elements extends React.Component {
   }
 
   render () {
-    const { activeKeyPath, elements, onClickElement } = this.props;
+    const { activeKeyPath, activePreviewKeyPath, elements, onClickElement, updatePreviewKeyPath } = this.props;
 
     return (
       <div className="elements-container">
-        { this.renderElements(activeKeyPath, elements, onClickElement) }
+        { this.renderElements(updatePreviewKeyPath, activePreviewKeyPath, activeKeyPath, elements, onClickElement) }
       </div>
     );
   }

@@ -1,28 +1,13 @@
 import React from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
-import PreviewContent from './PreviewContent.jsx';
 import Element from './Element.jsx';
 import './Preview.scss';
 
 export default class Preview extends React.Component {
 
   /*
-   * @param {array} elements
-   */
-  // renderElements(activeKeyPath, elements) {
-  //   return elements.map((element, i) => {
-  //     const elementKeyPath = currentKeyPath ? [...currentKeyPath, i] : [i];
-  //     return (
-  //       <Element
-  //         key={i}
-  //         {...element}
-  //       />
-  //     );
-  //   });
-  // }
-
-  /*
+   * Make all previews inactive except the one that has been selected.
    * @param {number} depthIndex - how deep to go in the array position
    * @param {array} activeTimelineKeyPath
    * @param {array} timelineKeyPath
@@ -49,12 +34,35 @@ export default class Preview extends React.Component {
   }
 
   /*
+   * @param {number} index
+   * @param {array} activeTimelineKeyPath
+   * @param {array} timelineKeyPath
    * @returns {boolean}
    */
   _keyPathsMatch(index, activeTimelineKeyPath, timelineKeyPath) {
     let match;
     if (activeTimelineKeyPath && timelineKeyPath && timelineKeyPath.length) {
-      match = activeTimelineKeyPath[index] === timelineKeyPath[index];
+      match = activeTimelineKeyPath[index] === timelineKeyPath[index] || this.isTargetDescendent(index, activeTimelineKeyPath, timelineKeyPath);
+    } else {
+      match = false;
+    }
+    return match;
+  }
+
+  /*
+   * @param {number} index
+   * @param {array} activeTimelineKeyPath
+   * @param {array} timelineKeyPath
+   * @returns {boolean}
+   */
+  isTargetDescendent(index, activeTimelineKeyPath, timelineKeyPath) {
+    let match;
+    if (timelineKeyPath.length > activeTimelineKeyPath.length) {
+      const lengthDiff = timelineKeyPath.length - activeTimelineKeyPath.length;
+      const activeTKP2Str = activeTimelineKeyPath.join('');
+      const tKP2Str = timelineKeyPath.join('');
+      const tKP2StrTrimmed = tKP2Str.substring(0, tKP2Str.length - lengthDiff);
+      match = activeTKP2Str === tKP2StrTrimmed;
     } else {
       match = false;
     }
@@ -80,10 +88,10 @@ export default class Preview extends React.Component {
 
         // let active = this.isElementActive(activeKeyPath, elementKeyPath) ? 'active' : '';
 
-    let inactiveStyle = '';
-    if (this.isPreviewInactive(currentDepth, activeKeyPath, elementKeyPath)) {
-      inactiveStyle = 'inactive';
-    }
+        let inactiveStyle = '';
+        if (this.isPreviewInactive(currentDepth, activeKeyPath, elementKeyPath)) {
+          inactiveStyle = 'inactive';
+        }
 
         return (
           <Element
@@ -120,19 +128,6 @@ export default class Preview extends React.Component {
     if (!showEditor) {
       full = 'full';
     }
-    // const timelines = this.state.timelines;
-    // const renderTimelines = timelines.map((timeline, i) => {
-    //   return (
-    //     <PreviewContent
-    //       {...timeline}
-    //       keyPath={[i]}
-    //       activeTimelineKeyPath={activeKeyPath}
-    //       isTimelineActive={isTimelineActive}
-    //       updatePreviewKeyPath={updatePreviewKeyPath}
-    //       handleTimelineChange={handleTimelineChange}
-    //     />
-    //   );
-    // });
 
     return (
       <div

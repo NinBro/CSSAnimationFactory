@@ -21,11 +21,13 @@ import _ from 'lodash';
 import {Helmet} from "react-helmet";
 import classNames from 'classnames';
 import DatePicker from './components/DatePicker';
-import TimelineEditor from './components/TimelineEditor/TimelineEditor';
+import Header from './components/Header/Header.jsx';
+import TimelineEditor from './components/Editor/TimelineEditor/TimelineEditor';
 import Preview from './components/Preview/Preview.jsx';
 import Button from './components/Button.jsx';
 import { Select } from 'antd';
 import Editor from './components/Editor/Editor.jsx';
+import CSSUtil from './Util/CSSUtil.js';
 
 // Samples
 import circleWheels from './animation-samples/circle-wheels';
@@ -50,6 +52,18 @@ export default class App extends React.Component {
     this.renderAnimationCSS = this.renderAnimationCSS.bind(this);
     this.onClickPreview = this.onClickPreview.bind(this);
     this.onClickElement = this.onClickElement.bind(this);
+
+
+    this.onClickHideEditor = this.onClickHideEditor.bind(this);
+    this.onClickShowEditor = this.onClickShowEditor.bind(this);
+
+
+
+
+
+
+
+
     this.appEvent = this.appEvent.bind(this);
     this.getMasterTimeline = this.getMasterTimeline.bind(this);
     this.getElementProperties = this.getElementProperties.bind(this);
@@ -852,6 +866,7 @@ export default class App extends React.Component {
   }
 
   /*
+   * Updates Preview Keypath (temporary hover)
    * @param {array} keyPath
    */
   updatePreviewKeyPath(keyPath) {
@@ -870,6 +885,8 @@ export default class App extends React.Component {
     // let activeElementKeyPath = [0, 0];
 
     console.log('app - render', this.state);
+
+    console.log(CSSUtil.elementCSS(elements));
     return (
       <div id="animationFactory" className="app">
         <Helmet>
@@ -877,16 +894,17 @@ export default class App extends React.Component {
           <title>CSS Animation Factory</title>
           <style type="text/css" id={baseCSS}>{this.state.baseCSS}</style>
           <style type="text/css" id={animationCSS}>{this.compileAnimationCSS(animations, this.getMasterTimeline(timelines))}</style>
+          <style type="text/css" id="element-css">{CSSUtil.elementCSS(elements)}</style>
         </Helmet>
-        <div className="navigation">
-          {this.renderEditorBtn(showEditor)}
-          <Button onClick={this.onclickAddNewTimeline.bind(this)}>Add Timeline</Button>
-          <Button onClick={this.onClickEditBaseCSS.bind(this)}>Edit Base CSS</Button>
-          <Select defaultValue={ sample } style={{ width: 120 }} onChange={this.handleSampleChange}>
-            <Option value="circleWheels">circleWheels</Option>
-            <Option value="monkey404">monkey404</Option>
-          </Select>
-        </div>
+        <Header
+          handleSampleChange={this.handleSampleChange}
+          onclickAddNewTimeline={this.onclickAddNewTimeline}
+          onClickEditBaseCSS={this.onClickEditBaseCSS}
+          onClickHideEditor={this.onClickHideEditor}
+          onClickShowEditor={this.onClickShowEditor}
+          sample={sample}
+          showEditor={showEditor}
+        />
         <Preview
           elements={elements}
           animations={animations}
@@ -902,6 +920,7 @@ export default class App extends React.Component {
           timelines={timelines}
         />
         <Editor
+          { ...this.state}
           timelines={timelines}
           activeElementKeyPath={activeElementKeyPath}
           activeTimelineKeyPath={activeTimelineKeyPath}

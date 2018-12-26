@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import { Input, Select } from 'antd';
+import CodeMirror from 'react-codemirror';
 
 export default class ElementProperties extends React.Component {
   constructor(props) {
@@ -70,6 +71,21 @@ export default class ElementProperties extends React.Component {
   }
 
   /*
+   * CODE MIRROR
+   * Have to manually re-update.... :/
+   * @param {node} nodeRef
+   * @param {value} string
+   */
+  updateCodeMirror(nodeRef, value) {
+     const newValue = value || '';
+    if (nodeRef) {
+      if (newValue !== nodeRef.getCodeMirror().getValue()) {
+        nodeRef.getCodeMirror().setValue(newValue);
+      }
+    }
+  }
+
+  /*
    * @param {string} value
    * @param {array} keypath
    * @param {object} props
@@ -83,8 +99,21 @@ export default class ElementProperties extends React.Component {
   }
 
   render () {
-    const { className, keyPath, name, linkedAnimationName, linkedAnimationKeyPath, animations, activeElementKeyPath, elements, getElementProperties, handleElementChange } = this.props;
+    const { className, css, keyPath, name, linkedAnimationName, linkedAnimationKeyPath, animations, activeElementKeyPath, elements, getElementProperties, handleElementChange } = this.props;
     const selectKeyPath = !_.isEmpty(linkedAnimationKeyPath) ? linkedAnimationKeyPath.join('X') : [];
+
+    // CODE MIRROR
+    // Have to manually re-update.... :/
+    // if (this.refs && this.refs.cmEditor) {
+    //   if (this.props.css !== this.refs.cmEditor.getCodeMirror().getValue()) {
+    //     this.refs.cmEditor.getCodeMirror().setValue(css);
+    //   }
+    // }
+    if (this.refs && this.refs.cmEditor) {
+      this.updateCodeMirror(this.refs.cmEditor, css);
+    }
+
+
 
     return (
       <div>
@@ -99,7 +128,15 @@ export default class ElementProperties extends React.Component {
           { this.getOptions(this.getAnimations(animations)) }
         </Select>
         Class Name
-        <Input value={className} onChange={(value) => {this.handleChange('className', value.target.value, activeElementKeyPath, this.props, handleElementChange )}} />
+        <Input
+          value={className}
+          onChange={(value) => {this.handleChange('className', value.target.value, activeElementKeyPath, this.props, handleElementChange )}} />
+        CSS
+        <CodeMirror
+          ref="cmEditor"
+          className="override-editor"
+          value={css}
+          onChange={(value) => {this.handleChange('css', value, activeElementKeyPath, this.props, handleElementChange )}} />
       </div>
     );
   }

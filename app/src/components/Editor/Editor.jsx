@@ -1,6 +1,6 @@
 import React from 'react';
 import Sidebar from './Sidebar/Sidebar.jsx';
-import TimelineEditor from './../TimelineEditor/TimelineEditor';
+import TimelineEditor from './TimelineEditor/TimelineEditor';
 import './Editor.scss';
 
 export default class Editor extends React.Component {

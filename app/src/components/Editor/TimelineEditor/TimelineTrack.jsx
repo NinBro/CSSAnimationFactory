@@ -86,17 +86,14 @@ export default class TimelineTrack extends React.Component {
         className={classNames('TimelineTrack timeline-track', extraClasses, activeClass)}
         name={animationProperties.name}
         onClick={this.onClick}
-                    onMouseEnter={() => {updatePreviewKeyPath(keyPath)}}
-            onMouseLeave={() => {updatePreviewKeyPath([])}} >
-
-
-            <div className="animation-key"/>
-            <div className="notches">
-              {this.getNotches(animationProperties)}
-            </div>
-            <div className="animation-key"></div>
-
-
+        onMouseEnter={() => {updatePreviewKeyPath(keyPath)}}
+        onMouseLeave={() => {updatePreviewKeyPath([])}}
+      >
+        <div className="animation-key"/>
+        <div className="notches">
+          {this.getNotches(animationProperties)}
+        </div>
+        <div className="animation-key"></div>
       </div>
     );
   }
