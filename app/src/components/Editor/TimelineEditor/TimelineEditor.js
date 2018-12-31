@@ -97,7 +97,7 @@ export default class TimelineEditor extends React.Component {
   }
 
   render () {
-    console.log('TimelineEditor - render', this.props);
+    // console.log('TimelineEditor - render', this.props);
     const { activeTimelineKeyPath, elements, isTimelineActive, handleChange, updateTimelineProperties, updatePreviewKeyPath, timelines } = this.props;
     const timelinesFlattened = this.getTimelinesFlattened(timelines);
     const elementsFlattened = this.getElementsFlattened(elements);

@@ -25,6 +25,7 @@ import Header from './components/Header/Header.jsx';
 import TimelineEditor from './components/Editor/TimelineEditor/TimelineEditor';
 import Preview from './components/Preview/Preview.jsx';
 import Button from './components/Button.jsx';
+import NewElement from './components/Modal/NewElement.jsx';
 import { Select } from 'antd';
 import Editor from './components/Editor/Editor.jsx';
 import CSSUtil from './Util/CSSUtil.js';
@@ -32,6 +33,7 @@ import CSSUtil from './Util/CSSUtil.js';
 // Samples
 import circleWheels from './animation-samples/circle-wheels';
 import monkey404 from './animation-samples/monkey-404';
+import empty from './animation-samples/empty';
 
 
 import './App.scss';
@@ -71,7 +73,8 @@ export default class App extends React.Component {
     this.getProperties = this.getProperties.bind(this);
 
 
-
+    this.showModal = this.showModal.bind(this);
+    this.hideModal = this.hideModal.bind(this);
 
 
 
@@ -100,6 +103,7 @@ export default class App extends React.Component {
 
   componentWillMount() {
     const sample = 'monkey404';
+    // const sample = 'empty';
     const appData = this.loadSample(sample);
     const { animations, elements, rawCSS } = appData;
 
@@ -145,14 +149,12 @@ export default class App extends React.Component {
       case 'monkey404':
         data = monkey404;
         break;
+      default:
+        data = empty;
+        break;
     }
 
     return _.cloneDeep(data);
-  }
-
-  // Starting point for data
-  getAppData() {
-    return this.loadSample('monkey404');
   }
 
   /*
@@ -370,6 +372,73 @@ export default class App extends React.Component {
   }
 
   /*
+   * @returns {array}
+   */
+  getNewPath(elements) {
+    const newPath = elements.length;
+    return [newPath];
+  }
+
+  showModal() {
+    const { elements } = this.state;
+    const newPath = this.getNewPath(elements);
+
+    const modalProps = {
+      keyPath: newPath,
+      visible: true,
+      handleElementChange: this.handleElementChange,
+      newElementProps: {
+        name: 'New Element',
+        css: 'width: 100px; height: 100px; background: blue;'
+      },
+      newAnimationProps: {
+        name: 'New Animation',
+        animationProperties : {
+          animationDirection : 'normal',
+          duration : '5s',
+          iteration : 'infinite',
+          timingFunction : 'ease'
+        },
+        keyframes: [
+          {
+            position: 0,
+            css: 'opacity: 0.3; left: 160px; transform:skewX(20deg);'
+          },
+          {
+            position: 65,
+            css: 'opacity: 1; left: 114px; transform:skewX(0deg);'
+          },
+          {
+            position: 100,
+            css: 'opacity: 0.3; left: 160px; transform:skewX(20deg);'
+          }
+        ]
+      }
+    };
+
+    this.handleElementChange(newPath, modalProps.newElementProps,
+      () => {
+        this.setState({
+          modalProps
+        });
+      }
+      );
+    // const newElementProps = .assign(_.cloneDeep(elements), element);
+    // this.setState({
+    //   showModal: true,
+    //   elementKeyPath: newPath
+    // });
+  }
+
+  hideModal() {
+    this.setState({
+      modalProps: {
+        visible: false
+      }
+    });
+  }
+
+  /*
    * @param {object} timeline
    */
   handleTimelineChange(timeline) {
@@ -400,22 +469,36 @@ export default class App extends React.Component {
   }
 
   /*
+   * To update/add/remove element properties
    * @param {array} keyPath - element location to change
    * @param {object} element - new props
    */
-  handleElementChange(keyPath, element) {
+  handleElementChange(keyPath, element, cb) {
     const { elements } = this.state;
     const newElements = _.cloneDeep(elements);
     let target = this.getElementProperties(keyPath, newElements);
     console.log('handleElementChange', keyPath, element);
     // target = element;
 
-    _.assign(target, element);
 
+    // remove
+    if (_.isEmpty(element)) {
+      _.pull(newElements, newElements[keyPath]);
+    // update
+    } else if (!_.isEmpty(target)) {
+      _.assign(target, element);
+    // add
+    } else if (_.isEmpty(target)) {
+      newElements.push(element);
+    }
 
     this.setState({
       elements: newElements
     });
+
+    if (_.isFunction(cb)) {
+      cb();
+    }
   }
 
   onClickShowEditor() {
@@ -880,13 +963,21 @@ export default class App extends React.Component {
     let _this = this;
     let baseCSS = 'baseCSS';
     let animationCSS = 'animationCSS';
-    const { sample, animations, elements, activeElementKeyPath, activeTimelineKeyPath, activePreviewKeyPath, timelines, showEditor, rightSidebarData } = this.state;
-
-    // let activeElementKeyPath = [0, 0];
+    const {
+      sample,
+      animations,
+      elements,
+      activeElementKeyPath,
+      activeTimelineKeyPath,
+      activePreviewKeyPath,
+      modalProps,
+      timelines,
+      showEditor,
+      rightSidebarData
+    } = this.state;
 
     console.log('app - render', this.state);
 
-    console.log(CSSUtil.elementCSS(elements));
     return (
       <div id="animationFactory" className="app">
         <Helmet>
@@ -897,6 +988,8 @@ export default class App extends React.Component {
           <style type="text/css" id="element-css">{CSSUtil.elementCSS(elements)}</style>
         </Helmet>
         <Header
+          elements={elements}
+          handleElementChange={this.handleElementChange}
           handleSampleChange={this.handleSampleChange}
           onclickAddNewTimeline={this.onclickAddNewTimeline}
           onClickEditBaseCSS={this.onClickEditBaseCSS}
@@ -904,6 +997,7 @@ export default class App extends React.Component {
           onClickShowEditor={this.onClickShowEditor}
           sample={sample}
           showEditor={showEditor}
+          showModal={this.showModal}
         />
         <Preview
           elements={elements}
@@ -941,6 +1035,12 @@ export default class App extends React.Component {
           getElementProperties={this.getElementProperties}
           getAnimationProperties={this.getAnimationProperties_}
         />
+        <NewElement
+          animations={animations}
+          getElementProperties={this.getElementProperties}
+          elements={elements}
+          hideModal={this.hideModal}
+          {...modalProps} />
       </div>
     );
   }

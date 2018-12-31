@@ -31,8 +31,8 @@ export default class Element extends React.Component {
   }
 
   render () {
-    const { children, animations, name, linkedAnimationName, linkedAnimationKeyPath, getProperties, keyPath, updatePreviewKeyPath, handleTimelineChange, onClickElement, ...props } = this.props;
-    const animationName = getProperties(linkedAnimationKeyPath, animations, 'animations').name;
+    const { children, animations, name, linkedAnimationKeyPath, getProperties, keyPath, updatePreviewKeyPath, handleTimelineChange, onClickElement, ...props } = this.props;
+    const animationName = linkedAnimationKeyPath ? getProperties(linkedAnimationKeyPath, animations, 'animations').name : '';
 
     return (
       <Tooltip title={name}>

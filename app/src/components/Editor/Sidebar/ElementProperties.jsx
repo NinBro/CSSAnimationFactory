@@ -43,11 +43,11 @@ export default class ElementProperties extends React.Component {
 
     const options = [noneOption, ...animations];
 
-    return _.map(options, (option) => {
+    return _.map(options, (option, i) => {
       const { name, keyPath } = option;
       const selectKeyPath = keyPath.join('X');
       return (
-        <Select.Option value={selectKeyPath}>
+        <Select.Option value={selectKeyPath} key={i}>
           { name }
         </Select.Option>
       );
@@ -99,7 +99,8 @@ export default class ElementProperties extends React.Component {
   }
 
   render () {
-    const { className, css, keyPath, name, linkedAnimationName, linkedAnimationKeyPath, animations, activeElementKeyPath, elements, getElementProperties, handleElementChange } = this.props;
+    const { className, css, keyPath, name, linkedAnimationName, linkedAnimationKeyPath,
+      animations, activeElementKeyPath, elements, getElementProperties, handleElementChange } = this.props;
     const selectKeyPath = !_.isEmpty(linkedAnimationKeyPath) ? linkedAnimationKeyPath.join('X') : [];
 
     // CODE MIRROR
@@ -117,7 +118,10 @@ export default class ElementProperties extends React.Component {
 
     return (
       <div>
-        Element Name: { name }
+        Element Name:
+        <Input
+          value={name}
+          onChange={(value) => {this.handleChange('name', value.target.value, activeElementKeyPath, this.props, handleElementChange )}} />
         <br />
         Animation Name:
         <Select
@@ -127,10 +131,12 @@ export default class ElementProperties extends React.Component {
         >
           { this.getOptions(this.getAnimations(animations)) }
         </Select>
+        <br/>
         Class Name
         <Input
           value={className}
           onChange={(value) => {this.handleChange('className', value.target.value, activeElementKeyPath, this.props, handleElementChange )}} />
+        <br />
         CSS
         <CodeMirror
           ref="cmEditor"

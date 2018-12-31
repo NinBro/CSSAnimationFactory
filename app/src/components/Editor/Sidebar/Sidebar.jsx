@@ -45,7 +45,7 @@ export default class Sidebar extends React.Component {
       cursorBlinkRate: 0
     };
 
-    console.log('Sidebar - render', this.props);
+    // console.log('Sidebar - render', this.props);
 
     // if (data && data.timeline) {
     //   content = (
