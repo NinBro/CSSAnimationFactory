@@ -4,12 +4,31 @@ import TimelineEditor from './TimelineEditor/TimelineEditor';
 import './Editor.scss';
 
 export default class Editor extends React.Component {
-  render () {
-    const { activeElementKeyPath, getElementProperties, getAnimationProperties, activeTimelineKeyPath, appEvent, animations, elements, showEditor, rightSidebarData,
-      getMasterTimeline, renderAnimationCSS, handleChange, updateTimelineProperties,
-      isTimelineActive, updatePreviewKeyPath, onClickTimelineTrack, timelines, handleElementChange } = this.props;
 
-    console.log('Editor - render', this.props);
+  render () {
+    const {
+      activeElementKeyPath,
+      getElementProperties,
+      getAnimationProperties,
+      activeTimelineKeyPath,
+      appEvent,
+      animations,
+      elements,
+      showEditor,
+      rightSidebarData,
+      getMasterTimeline,
+      renderAnimationCSS,
+      handleChange,
+      handleChange_,
+      updateTimelineProperties,
+      isTimelineActive,
+      updatePreviewKeyPath,
+      onClickTimelineTrack,
+      timelines,
+      handleElementChange
+    } = this.props;
+
+    // console.log('Editor - render', this.props);
 
     let editorNode;
     if (showEditor) {
@@ -39,7 +58,8 @@ export default class Editor extends React.Component {
           activeElementKeyPath,
           getElementProperties,
           getAnimationProperties,
-          handleElementChange
+          handleElementChange,
+          handleChange_
         },
         timelineEditor: {
           activeTimelineKeyPath,

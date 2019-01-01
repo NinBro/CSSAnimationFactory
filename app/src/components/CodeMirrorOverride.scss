@@ -6,5 +6,9 @@
     background: white;
     border: 1px solid #efefef;
     border-radius: 4px;
+
+    .CodeMirror-hscrollbar {
+          height: 4px !important;
+    }
   }
 }

@@ -106,7 +106,7 @@ export default class TimelineControls extends React.Component {
       activeClass = 'active';
     }
 
-    console.log('TimelineTrack - render', this.props);
+    // console.log('TimelineTrack - render', this.props);
 
     return (
       <div

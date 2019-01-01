@@ -47,6 +47,8 @@ export default class App extends React.Component {
     this.onClickTimelineTrack = this.onClickTimelineTrack.bind(this);
     this.handleTimelineChange = this.handleTimelineChange.bind(this);
     this.handleElementChange = this.handleElementChange.bind(this);
+    this.handleChange_ = this.handleChange_.bind(this);
+
 
 
     this.updatePreviewKeyPath = this.updatePreviewKeyPath.bind(this);
@@ -213,6 +215,102 @@ export default class App extends React.Component {
   }
 
   /*
+   * @param {object} timeline
+   */
+  handleTimelineChange(timeline) {
+    // console.log('handleTimelineChange', timeline);
+    const { timelines } = this.state;
+    const { keyPath } = timeline;
+    const newTimelines = _.cloneDeep(timelines);
+
+    if (timeline.keyPath) {
+      let timelineToUpdate;
+      if (timeline.keyPath.length > 1) {
+        newTimelines[timeline.keyPath[0]].descendants[timeline.keyPath[1]] = timeline;
+      } else {
+        newTimelines[timeline.keyPath[0]] = timeline;
+      }
+    }
+
+    this.setState({
+      rightSidebarData: {
+        active: true,
+        data: {
+          timeline: timeline
+        }
+      },
+      timelines: newTimelines,
+      activeTimelineKeyPath: keyPath
+    });
+  }
+
+
+  /*
+   * To update/add/remove item properties
+   * @param {array} keyPath - element location to change
+   * @param {object} element - new props
+   */
+  handleChange_(keyPath, itemType, item, cb) {
+    const { animations, elements } = this.state;
+
+    console.log('handleChange_', keyPath, itemType, item, cb);
+
+    let newItems;
+    let target;
+    switch (itemType) {
+      case 'element':
+        newItems = _.cloneDeep(elements);
+        target = this.getElementProperties(keyPath, newItems);
+        break;
+      case 'animation':
+        newItems = _.cloneDeep(animations);
+        target = this.getAnimationProperties_(keyPath, newItems);
+        break;
+      default:
+        return;
+    };
+
+
+    // remove
+    if (_.isEmpty(item)) {
+      _.pull(newItems, newItems[keyPath]);
+    // update
+    } else if (!_.isEmpty(target)) {
+      _.assign(target, item);
+    // add
+    } else if (_.isEmpty(target)) {
+      newItems.push(item);
+    }
+
+    let toSaveObj = {};
+    switch (itemType) {
+      case 'element':
+        toSaveObj.elements = newItems;
+        break;
+      case 'animation':
+        toSaveObj.animations = newItems;
+        break;
+      default:
+        return;
+    };
+
+    this.setState(toSaveObj);
+
+    if (_.isFunction(cb)) {
+      cb();
+    }
+  }
+
+  /*
+   * To update/add/remove element properties
+   * @param {array} keyPath - element location to change
+   * @param {object} element - new props
+   */
+  handleElementChange(keyPath, element, cb) {
+    this.handleChange_(keyPath, 'element', element, cb);
+  }
+
+  /*
    * @param {object} timelineToUpdate
    * @param {string} eventName
    */
@@ -374,55 +472,77 @@ export default class App extends React.Component {
   /*
    * @returns {array}
    */
-  getNewPath(elements) {
+  getNewAnimationPath(animations) {
+    const newPath = animations.length;
+    return [newPath];
+  }
+
+  /*
+   * @returns {array}
+   */
+  getNewElementPath(elements) {
     const newPath = elements.length;
     return [newPath];
   }
 
   showModal() {
-    const { elements } = this.state;
-    const newPath = this.getNewPath(elements);
+    const { animations, elements } = this.state;
+    const newAnimationPath = this.getNewAnimationPath(animations);
+    const newElementPath = this.getNewElementPath(elements);
 
     const modalProps = {
-      keyPath: newPath,
+      keyPath: newElementPath,
+
       visible: true,
       handleElementChange: this.handleElementChange,
       newElementProps: {
+         linkedAnimationKeyPath: newAnimationPath,
         name: 'New Element',
         css: 'width: 100px; height: 100px; background: blue;'
-      },
-      newAnimationProps: {
-        name: 'New Animation',
-        animationProperties : {
-          animationDirection : 'normal',
-          duration : '5s',
-          iteration : 'infinite',
-          timingFunction : 'ease'
-        },
-        keyframes: [
-          {
-            position: 0,
-            css: 'opacity: 0.3; left: 160px; transform:skewX(20deg);'
-          },
-          {
-            position: 65,
-            css: 'opacity: 1; left: 114px; transform:skewX(0deg);'
-          },
-          {
-            position: 100,
-            css: 'opacity: 0.3; left: 160px; transform:skewX(20deg);'
-          }
-        ]
       }
     };
 
-    this.handleElementChange(newPath, modalProps.newElementProps,
+    const newAnimationProps = {
+      name: 'NewAnimation',
+      animationProperties : {
+        animationDirection : 'normal',
+        duration : '5s',
+        iteration : 'infinite',
+        timingFunction : 'ease'
+      },
+      keyframes: [
+        {
+          position: 0,
+          css: 'opacity: 0.3; left: 160px; transform:skewX(20deg);'
+        },
+        {
+          position: 65,
+          css: 'opacity: 1; left: 114px; transform:skewX(0deg);'
+        },
+        {
+          position: 100,
+          css: 'opacity: 0.3; left: 160px; transform:skewX(20deg);'
+        }
+      ]
+    };
+
+    this.handleChange_(
+      newAnimationPath,
+      'animation',
+      newAnimationProps,
       () => {
-        this.setState({
-          modalProps
-        });
+        this.handleElementChange(newElementPath, modalProps.newElementProps,
+          () => {
+            this.setState({
+              modalProps
+            });
+          }
+        );
       }
-      );
+    );
+
+
+
     // const newElementProps = .assign(_.cloneDeep(elements), element);
     // this.setState({
     //   showModal: true,
@@ -436,69 +556,6 @@ export default class App extends React.Component {
         visible: false
       }
     });
-  }
-
-  /*
-   * @param {object} timeline
-   */
-  handleTimelineChange(timeline) {
-    // console.log('handleTimelineChange', timeline);
-    const { timelines } = this.state;
-    const { keyPath } = timeline;
-    const newTimelines = _.cloneDeep(timelines);
-
-    if (timeline.keyPath) {
-      let timelineToUpdate;
-      if (timeline.keyPath.length > 1) {
-        newTimelines[timeline.keyPath[0]].descendants[timeline.keyPath[1]] = timeline;
-      } else {
-        newTimelines[timeline.keyPath[0]] = timeline;
-      }
-    }
-
-    this.setState({
-      rightSidebarData: {
-        active: true,
-        data: {
-          timeline: timeline
-        }
-      },
-      timelines: newTimelines,
-      activeTimelineKeyPath: keyPath
-    });
-  }
-
-  /*
-   * To update/add/remove element properties
-   * @param {array} keyPath - element location to change
-   * @param {object} element - new props
-   */
-  handleElementChange(keyPath, element, cb) {
-    const { elements } = this.state;
-    const newElements = _.cloneDeep(elements);
-    let target = this.getElementProperties(keyPath, newElements);
-    console.log('handleElementChange', keyPath, element);
-    // target = element;
-
-
-    // remove
-    if (_.isEmpty(element)) {
-      _.pull(newElements, newElements[keyPath]);
-    // update
-    } else if (!_.isEmpty(target)) {
-      _.assign(target, element);
-    // add
-    } else if (_.isEmpty(target)) {
-      newElements.push(element);
-    }
-
-    this.setState({
-      elements: newElements
-    });
-
-    if (_.isFunction(cb)) {
-      cb();
-    }
   }
 
   onClickShowEditor() {
@@ -1024,6 +1081,7 @@ export default class App extends React.Component {
           showEditor={showEditor}
           rightSidebarData={rightSidebarData}
           renderAnimationCSS={this.renderAnimationCSS}
+          handleChange_={this.handleChange_}
           handleElementChange={this.handleElementChange}
           handleChange={this.handleChange}
           updateTimelineProperties={this.updateTimelineProperties}
@@ -1032,14 +1090,19 @@ export default class App extends React.Component {
           onClickTimelineTrack={this.onClickTimelineTrack}
           onClickElement={this.onClickElement}
           getMasterTimeline={this.getMasterTimeline}
-          getElementProperties={this.getElementProperties}
           getAnimationProperties={this.getAnimationProperties_}
+          getElementProperties={this.getElementProperties}
+
         />
         <NewElement
           animations={animations}
+          getAnimationProperties={this.getAnimationProperties_}
           getElementProperties={this.getElementProperties}
+          getProperties={this.getProperties}
           elements={elements}
+          handleChange_={this.handleChange_}
           hideModal={this.hideModal}
+          updateTimelineProperties={this.updateTimelineProperties}
           {...modalProps} />
       </div>
     );

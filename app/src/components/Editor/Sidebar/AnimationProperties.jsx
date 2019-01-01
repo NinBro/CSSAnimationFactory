@@ -23,6 +23,7 @@ export default class AnimationProperties extends React.Component {
 
   // Pass it up to parent....
   onKeyframeEditorChange(value) {
+    const {keyPath} = this.props;
     let newData = null;
 
     // Create a temp instance of props
@@ -30,10 +31,11 @@ export default class AnimationProperties extends React.Component {
 
     newData.keyframes = value;
     // newData.keyframes = value;
-    this.props.onChange(newData);
+    this.props.onChange(keyPath, 'animation', newData);
   }
 
   onValueChange(event) {
+    const {keyPath} = this.props;
     let value = _.isNumber(event.target.value) ? parseInt(event.target.value) : event.target.value;
     let id = _.isNumber(event.target.id) ? parseInt(event.target.id) : event.target.id;
     let newData = this.getProps();
@@ -55,7 +57,7 @@ export default class AnimationProperties extends React.Component {
         newData.animationProperties.animationDirection = value;
     }
 
-    this.props.onChange(newData);
+    this.props.onChange(keyPath, 'animation', newData);
   }
 
   // TODO
@@ -67,7 +69,8 @@ export default class AnimationProperties extends React.Component {
    * @returns {object} updated timeline props
    */
   onClickAddKeyframe() {
-    console.log('hiiiii');
+    const {keyPath} = this.props;
+    // console.log('hiiiii');
 
     let newData = null;
 
@@ -93,7 +96,7 @@ export default class AnimationProperties extends React.Component {
     console.log('onClickAddKeyframe', newData);
 
     // newData.keyframes = value;
-    this.props.onChange(newData);
+    this.props.onChange(keyPath, 'animation', newData);
   }
 
   // pauseAnimation() {
@@ -152,8 +155,13 @@ export default class AnimationProperties extends React.Component {
   }
 
   render () {
-    const { timelineProperties } = this.props;
-    console.log('AnimationProperties - render', this.props);
+    const { animationProperties, timelineProperties } = this.props;
+    // console.log('AnimationProperties - render', this.props);
+
+    const duration = animationProperties && animationProperties.duration || '';
+    const iteration = animationProperties && animationProperties.iteration || '';
+    const timingFunction = animationProperties && animationProperties.timingFunction || '';
+    const animationDirection = animationProperties && animationProperties.animationDirection || '';
 
     return (
       <div className="content-container animation-properties">
@@ -169,19 +177,22 @@ export default class AnimationProperties extends React.Component {
         </div>
         <div>
           <div>Duration </div>
-          <Input id="duration" value={this.props.animationProperties.duration} onChange={this.onValueChange} />
+          <Input
+            id="duration"
+            value={duration}
+            onChange={this.onValueChange} />
         </div>
         <div>
           <div>Iteration</div>
-          <Input id="iteration" value={this.props.animationProperties.iteration} onChange={this.onValueChange} />
+          <Input id="iteration" value={iteration} onChange={this.onValueChange} />
         </div>
         <div>
           <div>Timing-Function</div>
-          <Input id="timingFunction" value={this.props.animationProperties.timingFunction} onChange={this.onValueChange} />
+          <Input id="timingFunction" value={timingFunction} onChange={this.onValueChange} />
         </div>
         <div>
           <div>Direction </div>
-          <Input id="direction" value={this.props.animationProperties.animationDirection} onChange={this.onValueChange} />
+          <Input id="direction" value={animationDirection} onChange={this.onValueChange} />
         </div>
         <KeyframeEditor keyframes={this.props.keyframes} onChange={this.onKeyframeEditorChange}  />
       </div>

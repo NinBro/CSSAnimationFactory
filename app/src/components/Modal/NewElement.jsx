@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import AnimationProperties from '../Editor/Sidebar/AnimationProperties.jsx';
 import Element from '../Preview/Element.jsx';
 import ElementProperties from '../Editor/Sidebar/ElementProperties.jsx';
 import { Modal } from 'antd';
@@ -51,27 +52,49 @@ export default class NewElement extends React.Component {
       animations,
       handleElementChange,
       handleSampleChange,
+      handleChange_,
       hideModal,
       onclickAddNewTimeline,
       onClickEditBaseCSS,
+      getAnimationProperties,
       getElementProperties,
+      getProperties,
       elements,
       keyPath,
       sample,
       newElementProps,
       showEditor,
-      visible
+      visible,
+      updateTimelineProperties
     } = this.props;
 
     const elementProps = getElementProperties(keyPath, elements);
-    console.log(animations);
+    const animationProperties = getAnimationProperties(elementProps.linkedAnimationKeyPath, animations);
+    // console.log(animations);
 
     return (
         <Modal
           visible={visible ? visible : false}
           title="New Element"
           onOk={hideModal}
-          onCancel={() => {handleElementChange(keyPath, {}, hideModal)}}
+          onCancel={
+            () => {
+              handleElementChange(
+                keyPath,
+                {},
+                () => {
+                  handleChange_(
+                    elementProps.linkedAnimationKeyPath,
+                    'animation',
+                    {},
+                    () => {
+                      hideModal();
+                    }
+                  );
+                }
+              );
+            }
+          }
           okText="Save"
           cancelText="Cancel"
         >
@@ -79,8 +102,15 @@ export default class NewElement extends React.Component {
             activeElementKeyPath={keyPath}
             handleElementChange={handleElementChange}
             {...elementProps} />
+          <AnimationProperties
+            { ...animationProperties }
+            keyPath={elementProps.linkedAnimationKeyPath}
+            updateTimelineProperties={updateTimelineProperties}
+            onChange={handleChange_} />
           <br/><br/>
-          <Element {...elementProps} />
+          <Element
+          {...elementProps}
+          getProperties={getProperties} />
         </Modal>
     );
   }

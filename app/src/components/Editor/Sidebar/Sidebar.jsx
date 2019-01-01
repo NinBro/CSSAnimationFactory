@@ -16,20 +16,22 @@ import 'codemirror/mode/css/css';
 import '../../CodeMirrorOverride.scss';
 
 export default class Sidebar extends React.Component {
-  constructor(props) {
-    super(props);
-    this.handleChange = this.handleChange.bind(this);
-  }
-
-  // Pass it up to parent....
-  handleChange(value) {
-    this.props.onChange(value);
-  }
 
   render () {
-    const { updateTimelineProperties, view, animations, elements, activeElementKeyPath, getElementProperties, getAnimationProperties, handleElementChange } = this.props;
+    const {
+      updateTimelineProperties,
+      view,
+      animations,
+      elements,
+      activeElementKeyPath,
+      getElementProperties,
+      getAnimationProperties,
+      handleElementChange,
+      handleChange_,
+      onChange
+    } = this.props;
 
-    console.log('Sidebar - render', this.props);
+    // console.log('Sidebar - render', this.props);
     let data = this.props.data;
     let positionClass = this.props.position ? this.props.position + '-panel' : '';
     let stateClass = this.props.active ? 'active' : '';
@@ -99,8 +101,9 @@ export default class Sidebar extends React.Component {
             animationEl = (
               <AnimationProperties
                 { ...animationProperties }
+                keyPath={elementProperties.linkedAnimationKeyPath}
                 updateTimelineProperties={updateTimelineProperties}
-                onChange={this.handleChange} />
+                onChange={handleChange_} />
             );
           } else {
             animationEl = null;
